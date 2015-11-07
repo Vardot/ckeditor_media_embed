@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Definition of \Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin\MediaEmbed.
+ * Definition of \Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin\SemanticMediaEmbed.
  */
 
 namespace Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin;
@@ -12,15 +12,15 @@ use Drupal\ckeditor\CKEditorPluginConfigurableInterface;
 use Drupal\editor\Entity\Editor;
 
 /**
- * Defines the "Media Embed" plugin.
+ * Defines the "Semantic Media Embed" plugin.
  *
  * @CKEditorPlugin(
- *   id = "embed",
- *   label = @Translation("Media Embed"),
+ *   id = "embedsemantic",
+ *   label = @Translation("Semantic Media Embed"),
  *   module = "ckeditor_media_embed"
  * )
  */
-class MediaEmbed extends CKEditorPluginBase {
+class SemanticMediaEmbed extends CKEditorPluginBase {
 
   /**
    * {@inheritdoc}
@@ -37,7 +37,7 @@ class MediaEmbed extends CKEditorPluginBase {
    * {@inheritdoc}
    */
   public function getFile() {
-    return drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/embed/plugin.js';
+    return drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/embedsemantic/plugin.js';
   }
 
   /**
@@ -45,9 +45,9 @@ class MediaEmbed extends CKEditorPluginBase {
    */
   public function getButtons() {
     return array(
-      'Embed' => array(
-        'label' => t('Media Embed'),
-        'image' => drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/embed/icons/embed.png',
+      'EmbedSemantic' => array(
+        'label' => t('Semantic Media Embed'),
+        'image' => drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/embedsemantic/icons/embedsemantic.png',
       ),
     );
   }

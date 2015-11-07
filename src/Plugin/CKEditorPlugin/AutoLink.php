@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Definition of \Drupal\media_embed\Plugin\CKEditorPlugin\MediaEmbedBase.
+ * Definition of \Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin\MediaEmbedBase.
  */
 
-namespace Drupal\media_embed\Plugin\CKEditorPlugin;
+namespace Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin;
 
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\editor\Entity\Editor;
@@ -17,7 +17,7 @@ use Drupal\ckeditor\CKEditorPluginInterface;
  * @CKEditorPlugin(
  *   id = "autolink",
  *   label = @Translation("Auto Link"),
- *   module = "media_embed"
+ *   module = "ckeditor_media_embed"
  * )
  */
 class AutoLink extends PluginBase implements CKEditorPluginInterface {
@@ -47,7 +47,7 @@ class AutoLink extends PluginBase implements CKEditorPluginInterface {
    * {@inheritdoc}
    */
   public function getFile() {
-    return drupal_get_path('module', 'media_embed') . '/js/plugins/autolink/plugin.js';
+    return drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/autolink/plugin.js';
   }
 
   /**

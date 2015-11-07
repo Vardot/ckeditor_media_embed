@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Definition of \Drupal\media_embed\Plugin\CKEditorPlugin\AutoEmbed.
+ * Definition of \Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin\AutoEmbed.
  */
 
-namespace Drupal\media_embed\Plugin\CKEditorPlugin;
+namespace Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin;
 
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\editor\Entity\Editor;
@@ -20,7 +20,7 @@ use Drupal\Core\Form\FormStateInterface;
  * @CKEditorPlugin(
  *   id = "autoembed",
  *   label = @Translation("Auto Embed"),
- *   module = "media_embed"
+ *   module = "ckeditor_media_embed"
  * )
  */
 class AutoEmbed extends PluginBase implements CKEditorPluginInterface, CKEditorPluginContextualInterface, CKEditorPluginConfigurableInterface {
@@ -29,13 +29,20 @@ class AutoEmbed extends PluginBase implements CKEditorPluginInterface, CKEditorP
    * {@inheritdoc}
    */
   public function getDependencies(Editor $editor) {
-    return array(
+    $settings = $editor->getSettings();
+
+    $dependencies = array(
       'autolink',
-      'embed',
       'embedbase',
       'notificationaggregator',
       'notification',
     );
+
+    if ($embed_plugin = $settings['plugins']['autoembed']['status']) {
+      $dependencies[] = $embed_plugin;
+    }
+
+    return $dependencies;
   }
 
   /**
@@ -56,7 +63,7 @@ class AutoEmbed extends PluginBase implements CKEditorPluginInterface, CKEditorP
    * {@inheritdoc}
    */
   public function getFile() {
-    return drupal_get_path('module', 'media_embed') . '/js/plugins/autoembed/plugin.js';
+    return drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/autoembed/plugin.js';
   }
 
   /**
@@ -72,7 +79,7 @@ class AutoEmbed extends PluginBase implements CKEditorPluginInterface, CKEditorP
   public function isEnabled(Editor $editor) {
     $settings = $editor->getSettings();
 
-    return (isset($settings['plugins']['autoembed']['status']) && $settings['plugins']['autoembed']['status']);
+    return (isset($settings['plugins']['autoembed']['status']) && (bool) $settings['plugins']['autoembed']['status']);
   }
 
   /**
@@ -82,10 +89,15 @@ class AutoEmbed extends PluginBase implements CKEditorPluginInterface, CKEditorP
     $settings = $editor->getSettings();
 
     $form['status'] = array(
-      '#type' => 'checkbox',
+      '#type' => 'radios',
       '#title' => $this->t('Enable auto embed'),
-      '#default_value' => isset($settings['plugins']['autoembed']['status']) ? $settings['plugins']['autoembed']['status'] : 0,
-      '#description' => $this->t('When enabled media resource URLs pasted into the editing area are turned into an embed resource.'),
+      '#options' => array(
+        $this->t('Disabled'),
+        'embed' => t('Media Embed'),
+        'embedsemantic' => t('Semantic Media Embed'),
+      ),
+      '#default_value' => !empty($settings['plugins']['autoembed']['status']) ? $settings['plugins']['autoembed']['status'] : 0,
+      '#description' => $this->t('When enabled to a Media embed plugin, media resource URLs pasted into the editing area are turned into an embed resource using the selected plugin.'),
     );
 
     return $form;
