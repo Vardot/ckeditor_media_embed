@@ -21,6 +21,7 @@ use Drupal\editor\Entity\Editor;
  * )
  */
 class MediaEmbed extends CKEditorPluginBase {
+
   /**
    * {@inheritdoc}
    */
@@ -57,4 +58,5 @@ class MediaEmbed extends CKEditorPluginBase {
   public function getConfig(Editor $editor) {
     return array();
   }
+
 }

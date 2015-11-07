@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Definition of \Drupal\media_embed\Plugin\CKEditorPlugin\NotificationAggregator.
+ * Definition of \Drupal\media_embed\Plugin\CKEditorPlugin\MediaEmbedBase.
  */
 
 namespace Drupal\media_embed\Plugin\CKEditorPlugin;
@@ -12,15 +12,15 @@ use Drupal\editor\Entity\Editor;
 use Drupal\ckeditor\CKEditorPluginInterface;
 
 /**
- * Defines the "Notification" plugin.
+ * Defines the "Media Embed Base" plugin.
  *
  * @CKEditorPlugin(
- *   id = "notification",
- *   label = @Translation("Notification"),
+ *   id = "autolink",
+ *   label = @Translation("Auto Link"),
  *   module = "media_embed"
  * )
  */
-class Notification extends PluginBase implements CKEditorPluginInterface {
+class AutoLink extends PluginBase implements CKEditorPluginInterface {
 
   /**
    * {@inheritdoc}
@@ -47,7 +47,7 @@ class Notification extends PluginBase implements CKEditorPluginInterface {
    * {@inheritdoc}
    */
   public function getFile() {
-    return drupal_get_path('module', 'media_embed') . '/js/plugins/notification/plugin.js';
+    return drupal_get_path('module', 'media_embed') . '/js/plugins/autolink/plugin.js';
   }
 
   /**

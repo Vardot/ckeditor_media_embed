@@ -21,6 +21,7 @@ use Drupal\ckeditor\CKEditorPluginInterface;
  * )
  */
 class NotificationAggregator extends PluginBase implements CKEditorPluginInterface {
+
   /**
    * {@inheritdoc}
    */
@@ -55,4 +56,5 @@ class NotificationAggregator extends PluginBase implements CKEditorPluginInterfa
   public function getConfig(Editor $editor) {
     return array();
   }
+
 }
