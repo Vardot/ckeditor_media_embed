@@ -92,11 +92,11 @@ class AutoEmbed extends PluginBase implements CKEditorPluginInterface, CKEditorP
       '#type' => 'radios',
       '#title' => $this->t('Enable auto embed'),
       '#options' => array(
-        $this->t('Disabled'),
+        '' => $this->t('Disabled'),
         'embed' => t('Media Embed'),
         'embedsemantic' => t('Semantic Media Embed'),
       ),
-      '#default_value' => !empty($settings['plugins']['autoembed']['status']) ? $settings['plugins']['autoembed']['status'] : 0,
+      '#default_value' => !empty($settings['plugins']['autoembed']['status']) ? $settings['plugins']['autoembed']['status'] : '',
       '#description' => $this->t('When enabled to a Media embed plugin, media resource URLs pasted into the editing area are turned into an embed resource using the selected plugin.'),
     );
 
