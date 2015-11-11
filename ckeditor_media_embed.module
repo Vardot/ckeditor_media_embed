@@ -10,7 +10,7 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
     case 'help.page.ckeditor_media_embed':
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('The CKEditor Media Embed module provides support for CKEditors <a href=":embed" target="_blank">Media Embed</a>, <a href=":embedsemantic" target="_blank">Semantic Media Embed</a>, and <a href=":autoembed" target="_blank">Auto Embed</a> plugins.', array(':embed' => 'http://ckeditor.com/addon/embed', ':embedsemantic' => 'http://ckeditor.com/addon/embedsemantic', ':autoembed' => 'http://ckeditor.com/addon/autoembed')) . '</p>';
+      $output .= '<p>' . t('The CKEditor Media Embed module adds support for CKEditor plugins <a href=":embed" target="_blank">Media Embed</a>, <a href=":embedsemantic" target="_blank">Semantic Media Embed</a>, and <a href=":autoembed" target="_blank">Auto Embed</a> to Drupal core\'s CKEditor.', array(':embed' => 'http://ckeditor.com/addon/embed', ':embedsemantic' => 'http://ckeditor.com/addon/embedsemantic', ':autoembed' => 'http://ckeditor.com/addon/autoembed')) . '</p>';
       $output .= '<h3>' . t('Uses') . '</h3>';
       $output .= '<dl>';
       $output .= '<dt>' . t('Embed media resoruces') . '</dt>';
@@ -29,7 +29,7 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
       $output .= '<dt>' . t('Service provider URL examples') . '</dt>';
       $output .= '<dd>' . t('<a href=":url" target="_blank">Iframely</a> - <code>//ckeditor.iframe.ly/api/oembed?url={url}&callback={callback}</code>', array(':url' => 'https://iframely.com/')) . '</dd>';
       $output .= '<dd>' . t('<a href=":url" target="_blank">Noembed</a> - <code>//noembed.com/embed?url={url}&callback={callback}</code>', array(':url' => 'https://noembed.com/')) . '</dd>';
-      $output .= '<dd>' . t('<a href=":url" target="_blank">embed.ly</a> - <code>//api.embed.ly/1/oembed?url={url}&callback={callback}</code>', array(':url' => 'http://embed.ly/')) . '</dd>';
+      $output .= '<dd>' . t('<a href=":url" target="_blank">embed.ly</a> - <code>//api.embed.ly/1/oembed?url={url}&callback={callback}&key=MYAPITOKEN</code>', array(':url' => 'http://embed.ly/')) . '</dd>';
       $output .= '<dd>' . t('Many <a href=":url">others</a>', array(':url' => 'https://github.com/iamcal/oembed/blob/master/providers.yml')) . '</dd>';
       $output .= '</dl>';
       $output .= '<dl>';
