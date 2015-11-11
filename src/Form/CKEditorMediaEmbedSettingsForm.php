@@ -47,27 +47,15 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Provider URL'),
       '#default_value' => $config->get('embed_provider'),
       '#description' => $this->t('
-        @link &mdash; A template for the URL of the provider endpoint. This URL will be queried for each resource to be embedded. By default CKEditor uses the Iframely service.<br />
-        Example: <code>//example.com/api/oembed-proxy?resource-url={url}&callback={callback}<code><br />
-        <strong>Template parameters</strong><br />
-        <code>{url}</code> &mdash; The URL of the requested media, e.g. https://twitter.com/ckeditor/status/401373919157821441.<br />
-        <code>{callback}</code> &mdash; The name of the globally available callback used for JSONP requests.<br />',
-        array('@link' => $this->getDocumentationlink())
+        A template for the URL of the provider endpoint. This URL will be queried for each resource to be embedded. By default CKEditor uses the Iframely service.<br />
+        Check out the <a href=":help">help</a> page for more information.<br />
+        <strong>Example</strong> <code>//example.com/api/oembed-proxy?resource-url={url}&callback={callback}</code><br />
+        <strong>Default</strong> <code>//ckeditor.iframe.ly/api/oembed?url={url}&callback={callback}</code><br />',
+        array(':help' => \Drupal::url('help.page', array('name' => 'ckeditor_media_embed')))
       ),
     );
 
     return parent::buildForm($form, $form_state);
-  }
-
-  /**
-   * Retrieve the documentation link to be used in the provider field description.
-   *
-   * @return Markup
-   *   The Markup object for the link so that $this->t() doesn't try to encode it.
-   */
-  private function getDocumentationlink() {
-    $url = URL::fromUri('http://docs.ckeditor.com/#!/api/CKEDITOR.config-cfg-embed_provider', ['attributes' => ['target' => '_blank']]);
-    return Markup::create(\drupal::l($this->t('embed_provider'), $url));
   }
 
   /**
