@@ -8,9 +8,6 @@ use Drupal\Core\Routing\RouteMatchInterface;
 function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'help.page.ckeditor_media_embed':
-      $menu_page = \Drupal::moduleHandler()->moduleExists('menu_ui') ? \Drupal::url('entity.menu.collection') : '#';
-      $block_page = \Drupal::moduleHandler()->moduleExists('block') ? \Drupal::url('block.admin_display') : '#';
-      $contact_page = \Drupal::url('entity.contact_form.collection');
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
       $output .= '<p>' . t('The CKEditor Media Embed module provides support for CKEditors <a href=":embed" target="_blank">Media Embed</a>, <a href=":embedsemantic" target="_blank">Semantic Media Embed</a>, and <a href=":autoembed" target="_blank">Auto Embed</a> plugins.', array(':embed' => 'http://ckeditor.com/addon/embed', ':embedsemantic' => 'http://ckeditor.com/addon/embedsemantic', ':autoembed' => 'http://ckeditor.com/addon/autoembed')) . '</p>';
