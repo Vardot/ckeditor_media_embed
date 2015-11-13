@@ -38,7 +38,7 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
       $output .= '<dt>' . t('Media Embed') . '</dt>';
       $output .= '<dd>' . t('Inserts the retrieved HTML from the provider directly into the field and it is the HTML that is saved to the database.') . '</dd>';
       $output .= '<dt>' . t('Semantic Media Embed') . '</dt>';
-      $output .= '<dd>' . t('Inserts the <code>&lt;oembed&gt;</code> tag into the field and it is the tag tag is saved to the database. We use a filter to transform the <code>&lt;oembed&gt;</code> tag to the media embed html on render.<br />
+      $output .= '<dd>' . t('Inserts the <code>&lt;oembed&gt;</code> tag into the field and is saved to the database instead of the embed HTML. We use a filter to transform the <code>&lt;oembed&gt;</code> tag to the media embed html on render.<br />
         <strong>In order to use the Semantic Embed the "Convert Oembed tags to media embeds" filter must be enabled on the text format that uses it.</strong>') . '</dd>';
       $output .= '<h3>' . t('Autoembed') . '</h3>';
       $output .= '<p>' . t('Depending on which option is selected "Media Embed" or "Semantic Media Embed" when a media URL is inserted in to the field it will automatically be replaced with the correct media embed automatically.') . '</p>';
