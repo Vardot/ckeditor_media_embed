@@ -14,7 +14,8 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Utility\UnroutedUrlAssemblerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\TransferException;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class Embed implements EmbedInterface {
   use StringTranslationTrait;
@@ -27,11 +28,14 @@ class Embed implements EmbedInterface {
   protected $httpClient;
 
   /**
-   * The HTTP client to fetch the embed code with.
-   *
    * @var Drupal\Core\Utility\UnroutedUrlAssemblerInterface
    */
   protected $urlAssembler;
+
+  /**
+   * @var Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
 
   /**
    * Constructs an Embed object.
@@ -41,9 +45,10 @@ class Embed implements EmbedInterface {
    * @param UnroutedUrlAssemblerInterface
    *   The url assembler used to create url from a parsed url.
    */
-  public function __construct(ClientInterface $httpClient, UnroutedUrlAssemblerInterface $urlAssembler) {
+  public function __construct(ClientInterface $httpClient, UnroutedUrlAssemblerInterface $urlAssembler, RequestStack $requestStack) {
     $this->httpClient = $httpClient;
     $this->urlAssembler = $urlAssembler;
+    $this->requestStack = $requestStack;
     $this->setEmbedProvider(\Drupal::config('ckeditor_media_embed.settings')->get('embed_provider'));
   }
 
@@ -67,13 +72,14 @@ class Embed implements EmbedInterface {
   public function getEmbedObject($url) {
     $embed = NULL;
 
-     try {
-       $response = $this->httpClient->get($this->getEmbedProviderURL($url), array('headers' => array('content-type' => 'application/json')));
-       $embed = json_decode($response->getBody());
-     }
-     catch (GuzzleClientException $e) {
-       watchdog_exception('ckeditor_media_embed', $e);
-     }
+    try {
+      $response = $this->httpClient->get($this->getEmbedProviderURL($url), ['headers' => ['content-type' => 'application/json']]);
+      $embed = json_decode($response->getBody());
+    }
+    catch (TransferException $e) {
+      drupal_set_message(t('Unable to retrieve @url at this time, please check again later.', ['@url' => $url]), 'warning');
+      watchdog_exception('ckeditor_media_embed', $e);
+    }
 
      return $embed;
   }
@@ -85,7 +91,13 @@ class Embed implements EmbedInterface {
    *   The provider url with the media url injected.
    */
   protected function getEmbedProviderURL($url) {
-    return str_replace('%7Burl%7D', $url, $this->embed_provider);
+    $provider = $this->embed_provider;
+
+    if (strpos($provider, '//') === 0) {
+      $provider = $this->requestStack->getCurrentRequest()->getScheme() . ':' . $provider;
+    }
+
+    return str_replace('%7Burl%7D', $url, $provider);
   }
 
   /**
