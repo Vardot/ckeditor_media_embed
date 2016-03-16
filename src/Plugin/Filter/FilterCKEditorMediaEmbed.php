@@ -27,6 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class FilterCKEditorMediaEmbed extends FilterBase implements ContainerFactoryPluginInterface {
+
   /**
    * The Embed object used to convert <oembed> tags to embed html.
    *

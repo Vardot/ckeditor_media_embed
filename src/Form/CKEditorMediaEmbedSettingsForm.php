@@ -8,10 +8,13 @@
 namespace Drupal\ckeditor_media_embed\Form;
 
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
-use Drupal\Core\Url;
+use Drupal\Core\Routing\UrlGeneratorInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class CKEditorMediaEmbedSettingsForm.
@@ -19,6 +22,48 @@ use Drupal\Core\Url;
  * @package Drupal\ckeditor_media_embed\Form
  */
 class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
+
+  /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandler
+   */
+  protected $moduleHandler;
+
+  /**
+   * The URL generator.
+   *
+   * @var \Drupal\Core\Routing\UrlGeneratorInterface
+   */
+  protected $urlGenerator;
+
+  /**
+   * Constructs a \Drupal\system\ConfigFormBase object.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Drupal\Core\Extension\ModuleHandler $module_handler
+   *   The module handler.
+   * @param \Drupal\Core\Routing\UrlGeneratorInterface $url_generator
+   *   The URL generator.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandler $module_handler, UrlGeneratorInterface $url_generator) {
+    parent::__construct($config_factory);
+
+    $this->urlGenerator = $url_generator;
+    $this->moduleHandler = $module_handler;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('config.factory'),
+      $container->get('module_handler'),
+      $container->get('url_generator')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -46,14 +91,18 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Provider URL'),
       '#default_value' => $config->get('embed_provider'),
-      '#description' => $this->t('
-        A template for the URL of the provider endpoint. This URL will be queried for each resource to be embedded. By default CKEditor uses the Iframely service.<br />
-        Check out the <a href=":help">help</a> page for more information.<br />
+      '#description' => $this->t('A template for the URL of the provider endpoint.
+        This URL will be queried for each resource to be embedded. By default CKEditor uses the Iframely service.<br />
         <strong>Example</strong> <code>//example.com/api/oembed-proxy?resource-url={url}&callback={callback}</code><br />
-        <strong>Default</strong> <code>//ckeditor.iframe.ly/api/oembed?url={url}&callback={callback}</code><br />',
-        array(':help' => \Drupal::url('help.page', array('name' => 'ckeditor_media_embed')))
-      ),
+        <strong>Default</strong> <code>//ckeditor.iframe.ly/api/oembed?url={url}&callback={callback}</code><br />
+      '),
     );
+
+    if ($this->moduleHandler->moduleExists('help')) {
+      $form['embed_provider']['#description'] .= $this->t('Check out the <a href=":help">help</a> page for more information.<br />',
+        array(':help' => $this->urlGenerator->generateFromRoute('help.page', array('name' => 'ckeditor_media_embed')))
+      );
+    }
 
     return parent::buildForm($form, $form_state);
   }
