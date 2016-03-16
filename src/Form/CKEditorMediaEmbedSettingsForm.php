@@ -115,6 +115,7 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
 
     $embed_provider = $form_state->getValue('embed_provider');
     $this->prepareEmbedProviderValidation($embed_provider);
+
     if (!URLHelper::isValid($embed_provider, TRUE)) {
       $form_state->setErrorByName('embed_provider', $this->t('The provider url was not valid.'));
     }
@@ -133,9 +134,10 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
    * @return $this
    */
   protected function prepareEmbedProviderValidation(&$embed_provider) {
-    if (strpos($embed_provider, '//') !== FALSE) {
+    if (strpos($embed_provider, '//') === 0) {
       $embed_provider = 'http:' . $embed_provider;
     }
+
     $embed_provider = str_replace('{url}', '', $embed_provider);
     $embed_provider = str_replace('{callback}', '', $embed_provider);
 
