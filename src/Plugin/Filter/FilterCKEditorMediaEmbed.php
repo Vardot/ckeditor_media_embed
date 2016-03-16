@@ -21,9 +21,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @Filter(
  *   id = "filter_ckeditor_media_embed",
  *   title = @Translation("Convert Oembed tags to media embeds"),
- *   type = Drupal\filter\Plugin\FilterInterface::TYPE_MARKUP_LANGUAGE,
- *   settings = {
- *   }
+ *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_REVERSIBLE
  * )
  */
 class FilterCKEditorMediaEmbed extends FilterBase implements ContainerFactoryPluginInterface {
@@ -90,6 +88,5 @@ class FilterCKEditorMediaEmbed extends FilterBase implements ContainerFactoryPlu
   public function getDescription() {
     return $this->t('The provider specified as the @link will be used.', array('@link' => $this->ckeditor_media_embed->getSettingsLink()));
   }
-
 
 }
