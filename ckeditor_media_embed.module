@@ -20,7 +20,7 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
       $output .= '<p>' . t('Only a single provider may be configured at a time, however, it is recommended to use a proxy service like <a href=":iframely" target="_blank">Iframely</a> or <a href=":noembed" target="_blank">Noembed</a> so that many different media providers can be supported. You may also use a specific media provider so the embeds are limited to the embed types it supports.', array(':iframely' => 'https://iframely.com/', ':noembed' => 'https://noembed.com/')) . '</p>';
       $output .= '<dl>';
       $output .= '<dt>' . t('Provider URL') . '</dt>';
-      $output .= '<dd>' . t('The service provider is configured on the <a href=":settings">CKEditor Media Embed plugin settings</a> page.') . '</dd>';
+      $output .= '<dd>' . t('The service provider is configured on the @settings_link.', array('@settings_link' => \Drupal::service('ckeditor_media_embed')->getSettingsLink())) . '</dd>';
       $output .= '<dd>' . t('The service provider is configured using a single url as the provider with a <code>{url}</code> and <code>{callback}</code> token.') . '</dd>';
       $output .= '<dd><ul>';
       $output .= '<li><code>{url}</code> - ' . t('Token will be replaced during the request with the correct requested url, e.g. https://twitter.com/ckeditor/status/401373919157821441.') . '</li>';
