@@ -97,7 +97,7 @@ class Embed implements EmbedInterface {
       $provider = $this->requestStack->getCurrentRequest()->getScheme() . ':' . $provider;
     }
 
-    return str_replace('%7Burl%7D', $url, $provider);
+    return str_replace('%7Burl%7D', urlencode($url), $provider);
   }
 
   /**
