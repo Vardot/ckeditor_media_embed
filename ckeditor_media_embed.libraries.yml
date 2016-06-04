@@ -1,0 +1,14 @@
+ckeditor.embed:
+  remote: https://github.com/ckeditor/ckeditor-dev
+  version: "4.5.7"
+  license:
+    name: GNU-GPL-2.0-or-later
+    url: https://github.com/ckeditor/ckeditor-dev/blob/4.5.7/LICENSE.md
+    gpl-compatible: true
+  js:
+    /libraries/ckeditor/plugins/embed/plugin.js: {}
+  icon:
+    /libraries/ckeditor/plugins/embed/icons/embed.png: {}
+  dependencies:
+    - core/ckeditor
+    - editor/drupal.editor

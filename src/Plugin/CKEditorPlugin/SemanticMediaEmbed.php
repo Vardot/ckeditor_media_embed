@@ -37,7 +37,7 @@ class SemanticMediaEmbed extends CKEditorPluginBase {
    * {@inheritdoc}
    */
   public function getFile() {
-    return drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/embedsemantic/plugin.js';
+    return base_path() . 'libraries/ckeditor/plugins/' . $this->getPluginId() . '/plugin.js';
   }
 
   /**
@@ -47,7 +47,7 @@ class SemanticMediaEmbed extends CKEditorPluginBase {
     return array(
       'EmbedSemantic' => array(
         'label' => t('Semantic Media Embed'),
-        'image' => drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/embedsemantic/icons/embedsemantic.png',
+        'image' => base_path() . 'libraries/ckeditor/plugins/' . $this->getPluginId() . '/icons/' . $this->getPluginId() . '.png',
       ),
     );
   }

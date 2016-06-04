@@ -20,7 +20,7 @@ class InstallCommand extends BaseCommand {
 
   use HelperTrait;
 
-  protected $packageVersion = '4.5.9';
+  protected $packageVersion = '4.5.7';
   protected $packagePrefix = 'ckeditor-dev';
   protected $fileSystem;
 

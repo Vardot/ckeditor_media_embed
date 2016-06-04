@@ -47,7 +47,7 @@ class NotificationAggregator extends PluginBase implements CKEditorPluginInterfa
    * {@inheritdoc}
    */
   public function getFile() {
-    return drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/notificationaggregator/plugin.js';
+    return base_path() . 'libraries/ckeditor/plugins/' . $this->getPluginId() . '/plugin.js';
   }
 
   /**

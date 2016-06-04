@@ -33,11 +33,8 @@ class MediaEmbed extends CKEditorPluginBase {
     );
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function getFile() {
-    return drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/embed/plugin.js';
+    return base_path() . 'libraries/ckeditor/plugins/' . $this->getPluginId() . '/plugin.js';
   }
 
   /**
@@ -47,7 +44,7 @@ class MediaEmbed extends CKEditorPluginBase {
     return array(
       'Embed' => array(
         'label' => t('Media Embed'),
-        'image' => drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/embed/icons/embed.png',
+        'image' => base_path() . 'libraries/ckeditor/plugins/' . $this->getPluginId() . '/icons/' . $this->getPluginId() . '.png',
       ),
     );
   }

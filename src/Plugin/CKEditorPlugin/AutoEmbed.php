@@ -63,7 +63,7 @@ class AutoEmbed extends PluginBase implements CKEditorPluginInterface, CKEditorP
    * {@inheritdoc}
    */
   public function getFile() {
-    return drupal_get_path('module', 'ckeditor_media_embed') . '/js/plugins/autoembed/plugin.js';
+    return base_path() . 'libraries/ckeditor/plugins/' . $this->getPluginId() . '/plugin.js';
   }
 
   /**
