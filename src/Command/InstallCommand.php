@@ -29,6 +29,7 @@ class InstallCommand extends BaseCommand {
    */
   public function __construct(HelperSet $helper_set) {
     parent::__construct($helper_set);
+
     $this->fileSystem = new FileSystem();
   }
 
@@ -55,7 +56,10 @@ class InstallCommand extends BaseCommand {
   }
 
   /**
-   * @todo: Document.
+   * Retrieve a list of all plugins to install.
+   *
+   * @return array
+   *    An array of CKEditor plugin names that will be installed.
    */
   protected function getPlugins() {
     return [
