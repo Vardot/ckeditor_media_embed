@@ -4,7 +4,7 @@ namespace Drupal\ckeditor_media_embed\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Drupal\Console\Command\Command as BaseCommand;
+use Drupal\Console\Command\ContainerAwareCommand as BaseCommand;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Helper\HelperSet;
 use Drupal\Console\Helper\HelperTrait;
@@ -22,7 +22,6 @@ class InstallCommand extends BaseCommand {
 
   protected $packageVersion = '4.5.7';
   protected $packagePrefix = 'ckeditor-dev';
-  protected $fileSystem;
 
   /**
    * {@inheritdoc}
@@ -30,7 +29,7 @@ class InstallCommand extends BaseCommand {
   public function __construct(HelperSet $helper_set) {
     parent::__construct($helper_set);
 
-    $this->fileSystem = new FileSystem();
+    $this->setPackageVersion();
   }
 
   /**
@@ -76,14 +75,27 @@ class InstallCommand extends BaseCommand {
   /**
    * @todo: Document.
    */
+  protected function setPackageVersion() {
+    $ckeditor_library = $this->getService('library.discovery')->getLibraryByName('core', 'ckeditor');
+
+    if (!empty($ckeditor_library['version'])) {
+      $this->packageVersion = $ckeditor_library['version'];
+    }
+
+    return $this->packageVersion;
+  }
+
+  /**
+   * @todo: Document.
+   */
   protected function installCKeditorPlugin(DrupalStyle $io, $package_directory, $plugin_name) {
     $relative_path = 'plugins/' . $plugin_name;
     $libraries_path = $this->getSite()->getSiteRoot() . '/libraries/ckeditor/' . $relative_path;
     $package_plugin_path = $package_directory . '/' . $relative_path;
 
     try {
-      $this->fileSystem->mkdir($libraries_path);
-      $this->fileSystem->mirror($package_plugin_path, $libraries_path);
+      $this->getContainerHelper()->get('filesystem')->mkdir($libraries_path);
+      $this->getContainerHelper()->get('filesystem')->mirror($package_plugin_path, $libraries_path);
 
       $io->success(
         sprintf(
@@ -106,7 +118,7 @@ class InstallCommand extends BaseCommand {
     $io->comment(
       sprintf(
         $this->trans('commands.ckeditor_media_embed.install.messages.comment-downloading-package'),
-         $this->packageVersion
+        $this->packageVersion
       )
     );
 

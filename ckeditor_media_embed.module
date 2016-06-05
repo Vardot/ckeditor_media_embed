@@ -46,3 +46,13 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
       return $output;
   }
 }
+
+/**
+ * @todo: Document.
+ */
+function ckeditor_media_embed_get_ckeditor_plugin_library_path($plugin) {
+  // @todo: Make this a bit more intelligent so that we can support the
+  // following:
+  // - libraries/ckeditor/plugins/PLUGIN_NAME
+  // - PLUGIN_NAME
+}
