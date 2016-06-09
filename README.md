@@ -13,7 +13,7 @@ then follow the instructions for installing the CKEditor plugins below.
 #### Easiest
 
 1. [Install Drupal Console](https://github.com/hechoendrupal/DrupalConsole#installing-drupal-console).
-2. Run `drupal media_embed_ckeditor:install`.
+2. Run `drupal ckeditor_media_embed:install`.
 
 #### Harder
 
