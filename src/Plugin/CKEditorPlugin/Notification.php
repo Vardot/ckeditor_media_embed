@@ -47,7 +47,7 @@ class Notification extends PluginBase implements CKEditorPluginInterface {
    * {@inheritdoc}
    */
   public function getFile() {
-    return base_path() . 'libraries/ckeditor/plugins/' . $this->getPluginId() . '/plugin.js';
+    return ckeditor_media_embed_get_libraries_plugins_path() . $this->getPluginId() . '/plugin.js';
   }
 
   /**
