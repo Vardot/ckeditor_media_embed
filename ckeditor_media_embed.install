@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Install file for the CKEditor Media Embed plugin module.
+ */
+
+
+/**
+ * Implements hook_requirements().
+ */
+function ckeditor_media_embed_requirements($phase) {
+  $requirements = array();
+
+  if ($phase == 'runtime') {
+  }
+
+  return $requirements;
+}

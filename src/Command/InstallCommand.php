@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @file
+ * Contains \Drupal\ckeditor_media_embed\Command\InstallCommand.
+ */
+
+
 namespace Drupal\ckeditor_media_embed\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -10,6 +16,7 @@ use Symfony\Component\Console\Helper\HelperSet;
 use Drupal\Console\Helper\HelperTrait;
 use Drupal\Console\Style\DrupalStyle;
 use Alchemy\Zippy\Zippy;
+use Drupal\ckeditor_media_embed\AssetManager;
 
 /**
  * Class InstallCommand.
@@ -20,8 +27,7 @@ class InstallCommand extends BaseCommand {
 
   use HelperTrait;
 
-  protected $packageVersion = '4.5.7';
-  protected $packagePrefix = 'ckeditor-dev';
+  protected $packageVersion;
 
   /**
    * {@inheritdoc}
@@ -49,49 +55,26 @@ class InstallCommand extends BaseCommand {
 
     $package_directory = $this->downloadCKEditorFull($io);
 
-    foreach ($this->getPlugins() as $plugin) {
+    foreach (AssetManager::getPlugins() as $plugin) {
       $this->installCKeditorPlugin($io, $package_directory, $plugin);
     }
-  }
-
-  /**
-   * Retrieve a list of all plugins to install.
-   *
-   * @return array
-   *    An array of CKEditor plugin names that will be installed.
-   */
-  protected function getPlugins() {
-    return [
-      'autoembed',
-      'autolink',
-      'embed',
-      'embedbase',
-      'embedsemantic',
-      'notification',
-      'notificationaggregator',
-    ];
   }
 
   /**
    * @todo: Document.
    */
   protected function setPackageVersion() {
-    $ckeditor_library = $this->getService('library.discovery')->getLibraryByName('core', 'ckeditor');
+    $this->packageVersion = AssetManager::getCKEditorVersion($this->getService('library.discovery'));
 
-    if (!empty($ckeditor_library['version'])) {
-      $this->packageVersion = $ckeditor_library['version'];
-    }
-
-    return $this->packageVersion;
+    return $this;
   }
 
   /**
    * @todo: Document.
    */
   protected function installCKeditorPlugin(DrupalStyle $io, $package_directory, $plugin_name) {
-    $relative_path = 'plugins/' . $plugin_name;
-    $libraries_path = $this->getSite()->getSiteRoot() . '/libraries/ckeditor/' . $relative_path;
-    $package_plugin_path = $package_directory . '/' . $relative_path;
+    $libraries_path = AssetManager::getCKEditorLibraryPluginPath($this->getSite()->getSiteRoot() . '/') . $plugin_name;
+    $package_plugin_path = $package_directory . '/plugins/' . $plugin_name;
 
     try {
       $this->getContainerHelper()->get('filesystem')->mkdir($libraries_path);
@@ -122,8 +105,8 @@ class InstallCommand extends BaseCommand {
       )
     );
 
-    $package_name = $this->packagePrefix . '-' . $this->packageVersion;
-    $package_url = 'https://github.com/ckeditor/' . $this->packagePrefix . '/archive/' . $this->packageVersion . '.zip';
+    $package_name = AssetManager::getCKEditorDevFullPackageName($this->packageVersion);
+    $package_url = AssetManager::getCKEditorDevFullPackageUrl($this->packageVersion);
     $package_directory = sys_get_temp_dir() . '/' . $package_name;
     $package_archive = sys_get_temp_dir() . "/$package_name.zip";
 
