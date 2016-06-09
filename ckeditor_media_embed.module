@@ -30,7 +30,7 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
       $output .= '<dd>' . t('<a href=":url" target="_blank">Iframely</a> - <code>//ckeditor.iframe.ly/api/oembed?url={url}&callback={callback}</code>', array(':url' => 'https://iframely.com/')) . '</dd>';
       $output .= '<dd>' . t('<a href=":url" target="_blank">Noembed</a> - <code>//noembed.com/embed?url={url}&callback={callback}</code>', array(':url' => 'https://noembed.com/')) . '</dd>';
       $output .= '<dd>' . t('<a href=":url" target="_blank">embed.ly</a> - <code>//api.embed.ly/1/oembed?url={url}&callback={callback}&key=MYAPITOKEN</code>', array(':url' => 'http://embed.ly/')) . '</dd>';
-      $output .= '<dd>' . t('Many <a href=":url">others</a>', array(':url' => 'https://github.com/iamcal/oembed/blob/master/providers.yml')) . '</dd>';
+      $output .= '<dd>' . t('Many <a href=":url">others</a>', array(':url' => 'http://oembed.com/#section7.1')) . '</dd>';
       $output .= '</dl>';
       $output .= '<dl>';
       $output .= '<h3>' . t('Two different approaches') . '</h3>';
@@ -45,14 +45,4 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
       $output .= '</dl>';
       return $output;
   }
-}
-
-/**
- * @todo: Document.
- */
-function ckeditor_media_embed_get_ckeditor_plugin_library_path($plugin) {
-  // @todo: Make this a bit more intelligent so that we can support the
-  // following:
-  // - libraries/ckeditor/plugins/PLUGIN_NAME
-  // - PLUGIN_NAME
 }
