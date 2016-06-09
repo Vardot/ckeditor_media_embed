@@ -7,6 +7,8 @@
 
 namespace Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin;
 
+use Drupal\ckeditor_media_embed\AssetManager;
+
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\editor\Entity\Editor;
 use Drupal\ckeditor\CKEditorPluginInterface;
@@ -49,7 +51,7 @@ class MediaEmbedBase extends PluginBase implements CKEditorPluginInterface, CKEd
    * {@inheritdoc}
    */
   public function getFile() {
-    return ckeditor_media_embed_get_libraries_plugins_path() . $this->getPluginId() . '/plugin.js';
+    return AssetManager::getCKEditorLibraryPluginPath() . $this->getPluginId() . '/plugin.js';
   }
 
   /**

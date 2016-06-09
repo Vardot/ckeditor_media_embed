@@ -7,6 +7,8 @@
 
 namespace Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin;
 
+use Drupal\ckeditor_media_embed\AssetManager;
+
 use Drupal\ckeditor\CKEditorPluginBase;
 use Drupal\ckeditor\CKEditorPluginConfigurableInterface;
 use Drupal\editor\Entity\Editor;
@@ -37,7 +39,7 @@ class SemanticMediaEmbed extends CKEditorPluginBase {
    * {@inheritdoc}
    */
   public function getFile() {
-    return ckeditor_media_embed_get_libraries_plugins_path() . $this->getPluginId() . '/plugin.js';
+    return AssetManager::getCKEditorLibraryPluginPath() . $this->getPluginId() . '/plugin.js';
   }
 
   /**
@@ -47,7 +49,7 @@ class SemanticMediaEmbed extends CKEditorPluginBase {
     return array(
       'EmbedSemantic' => array(
         'label' => t('Semantic Media Embed'),
-        'image' => ckeditor_media_embed_get_libraries_plugins_path() . $this->getPluginId() . '/icons/' . $this->getPluginId() . '.png',
+        'image' => AssetManager::getCKEditorLibraryPluginPath() . $this->getPluginId() . '/icons/' . $this->getPluginId() . '.png',
       ),
     );
   }
