@@ -34,6 +34,48 @@ class AssetManager {
   /**
    * @todo: Document.
    */
+  public static function getPluginsInstallStatuses($base_path = '') {
+    $plugin_statuses = array();
+
+    foreach (self::getPlugins() as $plugin_name) {
+      $plugin_statuses[$plugin_name] = self::pluginIsInstalled($plugin_name, $base_path);
+    }
+
+    return $plugin_statuses;
+  }
+
+  /**
+   * @todo: Document.
+   */
+  public static function pluginsAreInstalled($base_path) {
+    $installed = TRUE;
+
+    foreach (self::getPlugins() as $plugin_name) {
+      if (!pluginIsInstalled($plugin_name, $base_path)) {
+        $installed = FALSE;
+      }
+    }
+
+    return $installed;
+  }
+
+  /**
+   * @todo: Document.
+   */
+  public static function pluginIsInstalled($plugin_name, $base_path = '') {
+    $is_installed = FALSE;
+
+    $library_plugin_path = self::getCKEditorLibraryPluginPath($base_path) . $plugin_name;
+    if (is_dir($library_plugin_path) && is_file($library_plugin_path . '/plugin.js')) {
+      $is_installed = FALSE;
+    }
+
+    return $is_installed;
+  }
+
+  /**
+   * @todo: Document.
+   */
   public static function getCKEditorVersion(LibraryDiscoveryInterface $library_discovery) {
     $version = self::$libraryVersion;
 

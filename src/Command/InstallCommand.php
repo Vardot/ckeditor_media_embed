@@ -8,6 +8,8 @@
 
 namespace Drupal\ckeditor_media_embed\Command;
 
+use Drupal\ckeditor_media_embed\AssetManager;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Drupal\Console\Command\ContainerAwareCommand as BaseCommand;
@@ -16,7 +18,6 @@ use Symfony\Component\Console\Helper\HelperSet;
 use Drupal\Console\Helper\HelperTrait;
 use Drupal\Console\Style\DrupalStyle;
 use Alchemy\Zippy\Zippy;
-use Drupal\ckeditor_media_embed\AssetManager;
 
 /**
  * Class InstallCommand.
