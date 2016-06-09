@@ -67,7 +67,7 @@ class AssetManager {
 
     $library_plugin_path = self::getCKEditorLibraryPluginPath($base_path) . $plugin_name;
     if (is_dir($library_plugin_path) && is_file($library_plugin_path . '/plugin.js')) {
-      $is_installed = FALSE;
+      $is_installed = TRUE;
     }
 
     return $is_installed;
