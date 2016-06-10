@@ -69,7 +69,14 @@ function ckeditor_media_embed_ckeditor_plugin_info_alter(array &$plugins) {
 }
 
 /**
- * @todo: Document.
+ * Retrieve the install instructions message.
+ *
+ * @param bool $prefix (optional)
+ *   Determine if the prefix should be prepended to the install message.
+ *   Defaults to true.
+ *
+ * @return string|\Drupal\Component\Render\MarkupInterface
+ *   A safe string representation of the install instructions.
  */
 function _ckeditor_media_embed_get_install_instructions($prefix = TRUE) {
   $message_prefix = '';

@@ -45,7 +45,11 @@ class AssetManager {
   }
 
   /**
-   * @todo: Document.
+   * Determine if all our CKEditor plugins are installed.
+   *
+   * @return bool
+   *   Returns TRUE if all of our CKEditor plugins are installed and FALSE
+   *   otherwise.
    */
   public static function pluginsAreInstalled() {
     $installed = TRUE;
@@ -60,7 +64,14 @@ class AssetManager {
   }
 
   /**
-   * @todo: Document.
+   * Determine if the specified plugin is installed.
+   *
+   * @param string $plugin_name
+   *   The name of the plugin to check installation.
+   *
+   * @return bool
+   *   Returns TRUE if the specfied CKEditor plugin is installed and FALSE
+   *   otherwise.
    */
   public static function pluginIsInstalled($plugin_name) {
     $is_installed = FALSE;
@@ -74,7 +85,14 @@ class AssetManager {
   }
 
   /**
-   * @todo: Document.
+   * Retrieve version number of the currently installed CKEditor.
+   *
+   * @param LibraryDiscoveryInterface $library_discovery
+   *   The library discovery service to use for retrieving information about
+   *   the CKeditor library.
+   *
+   * @return string
+   *   The version number of the currently installed CKEditor.
    */
   public static function getCKEditorVersion(LibraryDiscoveryInterface $library_discovery) {
     $version = self::$libraryVersion;
@@ -89,28 +107,46 @@ class AssetManager {
   }
 
   /**
-   * @todo: Document.
+   * Retrieve the path of the CKEditor plugins for use in a URL.
+   *
+   * @return string
+   *   The path to the CKEditor plugins for use in a URL.
    */
   public static function getCKEditorLibraryPluginPath() {
     return base_path() . 'libraries/ckeditor/plugins/';
   }
 
   /**
-   * @todo: Document.
+   * Retrieve the system directory of the CKEditor plugins for use with commands
+   * and abolute system paths.
+   *
+   * @return string
+   *   The diretory to the CKEditor plugins for use in a with commands and
+   *   absolute system paths.
    */
   public static function getCKEditorLibraryPluginDirectory() {
     return DRUPAL_ROOT . '/libraries/ckeditor/plugins/';
   }
 
   /**
-   * @todo: Document.
+   * Retrieve the URL of the source package to download based on the package
+   * name and version for CKEditor.
+   *
+   * @param string $version
+   *   The version of the CKEditor source package to download.
+   *
+   * @return string
+   *   The absolute URL to the source package downloadable archive.
    */
   public static function getCKEditorDevFullPackageUrl($version) {
     return 'https://github.com/ckeditor/' . self::$packagePrefix . '/archive/' . $version . '.zip';
   }
 
   /**
-   * @todo: Document.
+   * Retrieve the source CKEditor package name based on the package version.
+   *
+   * @param string $version
+   *   The version of the CKEditor source package.
    */
   public static function getCKEditorDevFullPackageName($version) {
     return self::$packagePrefix . '-' . $version;
