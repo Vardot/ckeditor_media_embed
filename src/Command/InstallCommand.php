@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\ckeditor_media_embed\Command\InstallCommand.
- */
-
 namespace Drupal\ckeditor_media_embed\Command;
 
 use Drupal\ckeditor_media_embed\AssetManager;
@@ -13,7 +8,6 @@ use Drupal\Console\Command\ContainerAwareCommand as BaseCommand;
 use Drupal\Console\Helper\HelperTrait;
 use Drupal\Console\Style\DrupalStyle;
 use Alchemy\Zippy\Zippy;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -65,7 +59,7 @@ class InstallCommand extends BaseCommand {
   /**
    * Set the current CKEditor package version that is installed with Drupal.
    *
-   * @return self
+   * @return $this
    */
   protected function setPackageVersion() {
     $this->packageVersion = AssetManager::getCKEditorVersion($this->getService('library.discovery'));
@@ -83,8 +77,9 @@ class InstallCommand extends BaseCommand {
    * @param string $plugin_name
    *   The machine name of the CKEditor plugin to install.
    *
-   * @return self
+   * @return $this
    */
+  // @codingStandardsIgnoreLine
   protected function installCKeditorPlugin(DrupalStyle $io, $package_directory, $plugin_name) {
     $libraries_path = AssetManager::getCKEditorLibraryPluginDirectory() . $plugin_name;
     $package_plugin_path = $package_directory . '/plugins/' . $plugin_name;
@@ -116,6 +111,7 @@ class InstallCommand extends BaseCommand {
    * @return string
    *   The path to the downloaded and extracted package.
    */
+  // @codingStandardsIgnoreLine
   protected function downloadCKEditorFull(DrupalStyle $io) {
     $io->comment(
       sprintf(

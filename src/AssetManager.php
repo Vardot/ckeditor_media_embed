@@ -1,13 +1,12 @@
 <?php
-/**
- * @file
- * Contains \Drupal\ckeditor_media_embed\AssetManager.
- */
 
 namespace Drupal\ckeditor_media_embed;
 
 use Drupal\Core\Asset\LibraryDiscoveryInterface;
 
+/**
+ * The AssetManager facade for managing CKEditor plugins.
+ */
 class AssetManager {
 
   private static $libraryVersion = '4.5.x';
@@ -94,6 +93,7 @@ class AssetManager {
    * @return string
    *   The version number of the currently installed CKEditor.
    */
+  // @codingStandardsIgnoreLine
   public static function getCKEditorVersion(LibraryDiscoveryInterface $library_discovery) {
     $version = self::$libraryVersion;
 
@@ -112,25 +112,27 @@ class AssetManager {
    * @return string
    *   The path to the CKEditor plugins for use in a URL.
    */
+  // @codingStandardsIgnoreLine
   public static function getCKEditorLibraryPluginPath() {
     return base_path() . 'libraries/ckeditor/plugins/';
   }
 
   /**
-   * Retrieve the system directory of the CKEditor plugins for use with commands
-   * and abolute system paths.
+   * Retrieve the system directory of the CKEditor plugins.
+   *
+   * The plugin directory is used with commands and abolute system path.
    *
    * @return string
    *   The diretory to the CKEditor plugins for use in a with commands and
    *   absolute system paths.
    */
+  // @codingStandardsIgnoreLine
   public static function getCKEditorLibraryPluginDirectory() {
     return DRUPAL_ROOT . '/libraries/ckeditor/plugins/';
   }
 
   /**
-   * Retrieve the URL of the source package to download based on the package
-   * name and version for CKEditor.
+   * Retrieve the URL of the source package to download.
    *
    * @param string $version
    *   The version of the CKEditor source package to download.
@@ -138,6 +140,7 @@ class AssetManager {
    * @return string
    *   The absolute URL to the source package downloadable archive.
    */
+  // @codingStandardsIgnoreLine
   public static function getCKEditorDevFullPackageUrl($version) {
     return 'https://github.com/ckeditor/' . self::$packagePrefix . '/archive/' . $version . '.zip';
   }
@@ -148,6 +151,7 @@ class AssetManager {
    * @param string $version
    *   The version of the CKEditor source package.
    */
+  // @codingStandardsIgnoreLine
   public static function getCKEditorDevFullPackageName($version) {
     return self::$packagePrefix . '-' . $version;
   }

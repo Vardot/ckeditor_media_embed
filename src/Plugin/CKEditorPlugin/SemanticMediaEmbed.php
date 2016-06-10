@@ -1,16 +1,10 @@
 <?php
 
-/**
- * @file
- * Definition of \Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin\SemanticMediaEmbed.
- */
-
 namespace Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin;
 
 use Drupal\ckeditor_media_embed\AssetManager;
 
 use Drupal\ckeditor\CKEditorPluginBase;
-use Drupal\ckeditor\CKEditorPluginConfigurableInterface;
 use Drupal\editor\Entity\Editor;
 
 /**

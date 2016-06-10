@@ -1,16 +1,10 @@
 <?php
 
-/**
- * @file
- * Definition of \Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin\MediaEmbed.
- */
-
 namespace Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin;
 
 use Drupal\ckeditor_media_embed\AssetManager;
 
 use Drupal\ckeditor\CKEditorPluginBase;
-use Drupal\ckeditor\CKEditorPluginConfigurableInterface;
 use Drupal\editor\Entity\Editor;
 
 /**
@@ -35,6 +29,9 @@ class MediaEmbed extends CKEditorPluginBase {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getFile() {
     return AssetManager::getCKEditorLibraryPluginPath() . $this->getPluginId() . '/plugin.js';
   }

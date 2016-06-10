@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\ckeditor_media_embed\Form\CKEditorMediaEmbedSettingsForm.
- */
-
 namespace Drupal\ckeditor_media_embed\Form;
 
 use Drupal\ckeditor_media_embed\AssetManager;
@@ -14,7 +9,6 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\UrlGeneratorInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -71,9 +65,7 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return [
-      'ckeditor_media_embed.settings'
-    ];
+    return ['ckeditor_media_embed.settings'];
   }
 
   /**
@@ -133,10 +125,6 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
    *
    * @param string $embed_provider
    *   The embed provider that should be prepared for validation.
-   *
-   * @return string
-   *   The embed provider url with a schema and escaped tokens so that it has
-   *   a chance to validate.
    *
    * @return $this
    */

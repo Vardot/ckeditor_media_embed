@@ -9,7 +9,6 @@ use Drupal\ckeditor_media_embed\AssetManager;
 
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Routing\UrlGenerator;
 
 /**
  * Implements hook_help().
@@ -19,7 +18,14 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
     case 'help.page.ckeditor_media_embed':
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('The CKEditor Media Embed module adds support for CKEditor plugins <a href=":embed" target="_blank">Media Embed</a>, <a href=":embedsemantic" target="_blank">Semantic Media Embed</a>, and <a href=":autoembed" target="_blank">Auto Embed</a> to Drupal core\'s CKEditor.', array(':embed' => 'http://ckeditor.com/addon/embed', ':embedsemantic' => 'http://ckeditor.com/addon/embedsemantic', ':autoembed' => 'http://ckeditor.com/addon/autoembed')) . '</p>';
+      $output .= '<p>';
+      $output .= t('The CKEditor Media Embed module adds support for CKEditor plugins <a href=":embed" target="_blank">Media Embed</a>, <a href=":embedsemantic" target="_blank">Semantic Media Embed</a>, and <a href=":autoembed" target="_blank">Auto Embed</a> to Drupal core\'s CKEditor.',
+        [
+          ':embed' => 'http://ckeditor.com/addon/embed',
+          ':embedsemantic' => 'http://ckeditor.com/addon/embedsemantic',
+          ':autoembed' => 'http://ckeditor.com/addon/autoembed',
+        ]);
+      $output .= '</p>';
       $output .= '<h3>' . t('Uses') . '</h3>';
       $output .= '<dl>';
       $output .= '<dt>' . t('Embed media resoruces') . '</dt>';
@@ -71,9 +77,9 @@ function ckeditor_media_embed_ckeditor_plugin_info_alter(array &$plugins) {
 /**
  * Retrieve the install instructions message.
  *
- * @param bool $prefix (optional)
- *   Determine if the prefix should be prepended to the install message.
- *   Defaults to true.
+ * @param bool $prefix
+ *   (Optional) Determine if the prefix should be prepended to the install
+ *   message. Defaults to true.
  *
  * @return string|\Drupal\Component\Render\MarkupInterface
  *   A safe string representation of the install instructions.
@@ -82,10 +88,13 @@ function _ckeditor_media_embed_get_install_instructions($prefix = TRUE) {
   $message_prefix = '';
 
   if ($prefix) {
-    $message_prefix = t('The required CKEditor plugs are missing.') . ' ';
+    $message_prefix = t('The required CKEditor plugs are missing.');
   }
 
-  return Markup::Create($message_prefix . t('To install the missing CKEditor plugins run <strong><code>drupal ckeditor_media_embed:install</code></strong> if you have <a href="https://drupalconsole.com/" target="_blank">Drupal Console</a> installed. Otherwise, please see the <a href=":help">help</a> page for additional install methods.',
-    array(':help' => \Drupal::service('url_generator')->generateFromRoute('help.page', array('name' => 'ckeditor_media_embed')))
+  return Markup::Create(t('@prefix To install the missing CKEditor plugins run <strong><code>drupal ckeditor_media_embed:install</code></strong> if you have <a href="https://drupalconsole.com/" target="_blank">Drupal Console</a> installed. Otherwise, please see the <a href=":help">help</a> page for additional install methods.',
+    [
+      ':help' => \Drupal::service('url_generator')->generateFromRoute('help.page', array('name' => 'ckeditor_media_embed')),
+      '@prefix' => $message_prefix,
+    ]
   ));
 }

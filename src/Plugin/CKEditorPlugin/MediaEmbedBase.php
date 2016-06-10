@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Definition of \Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin\MediaEmbedBase.
- */
-
 namespace Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin;
 
 use Drupal\ckeditor_media_embed\AssetManager;
