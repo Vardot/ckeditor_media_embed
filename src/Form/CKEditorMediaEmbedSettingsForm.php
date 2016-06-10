@@ -7,6 +7,8 @@
 
 namespace Drupal\ckeditor_media_embed\Form;
 
+use Drupal\ckeditor_media_embed\AssetManager;
+
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandler;
@@ -86,6 +88,11 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('ckeditor_media_embed.settings');
+
+    if (!AssetManager::pluginsAreInstalled()) {
+      drupal_set_message(_ckeditor_media_embed_get_install_instructions(), 'warning');
+      return array();
+    }
 
     $form['embed_provider'] = array(
       '#type' => 'textfield',

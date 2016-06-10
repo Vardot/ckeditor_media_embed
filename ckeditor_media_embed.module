@@ -5,7 +5,11 @@
  * Module file for the CKEditor Media Embed plugin module.
  */
 
+use Drupal\ckeditor_media_embed\AssetManager;
+
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Routing\UrlGenerator;
 
 /**
  * Implements hook_help().
@@ -50,4 +54,31 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
       $output .= '</dl>';
       return $output;
   }
+}
+
+/**
+ * Implements hook_ckeditor_plugin_info_alter().
+ */
+function ckeditor_media_embed_ckeditor_plugin_info_alter(array &$plugins) {
+  $plugin_statuses = AssetManager::getPluginsInstallStatuses(DRUPAL_ROOT . '/');
+  foreach ($plugin_statuses as $plugin_name => $is_installed) {
+    if (!$is_installed && !empty($plugins[$plugin_name])) {
+      unset($plugins[$plugin_name]);
+    }
+  }
+}
+
+/**
+ * @todo: Document.
+ */
+function _ckeditor_media_embed_get_install_instructions($prefix = TRUE) {
+  $message_prefix = '';
+
+  if ($prefix) {
+    $message_prefix = t('The required CKEditor plugs are missing.') . ' ';
+  }
+
+  return Markup::Create($message_prefix . t('To install the missing CKEditor plugins run <strong><code>drupal ckeditor_media_embed:install</code></strong> if you have <a href="https://drupalconsole.com/" target="_blank">Drupal Console</a> installed. Otherwise, please see the <a href=":help">help</a> page for additional install methods.',
+    array(':help' => \Drupal::service('url_generator')->generateFromRoute('help.page', array('name' => 'ckeditor_media_embed')))
+  ));
 }

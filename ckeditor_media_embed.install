@@ -10,6 +10,17 @@ use Drupal\ckeditor_media_embed\AssetManager;
 use Drupal\Core\Render\Markup;
 
 /**
+ * Implements hook_install().
+ */
+function ckeditor_media_embed_install() {
+  if (!AssetManager::pluginsAreInstalled()) {
+    $message .= _ckeditor_media_embed_get_install_instructions();
+
+    drupal_set_message(Markup::Create($message), 'warning');
+  }
+}
+
+/**
  * Implements hook_requirements().
  */
 function ckeditor_media_embed_requirements($phase) {
@@ -26,10 +37,7 @@ function ckeditor_media_embed_requirements($phase) {
     $has_error = !empty($missing_plugins) ? TRUE : FALSE;
     $requirements["ckeditor_media_embed"] = array(
       'title' => 'CKEditor Media Embed plugin',
-      'value' => t('CKEditor plugins of version !version: !status', array(
-        '!version' => AssetManager::getCKEditorVersion(\Drupal::service('library.discovery')),
-        '!status' => ($has_error) ? t('Missing') : t('Installed')
-      )),
+      'value' => ($has_error) ? t('Missing plugins') : t('Installed'),
       'description' => _ckeditor_media_embed_requirments_build_description($installed_plugins, $missing_plugins),
       'severity' => ($has_error) ? REQUIREMENT_ERROR : REQUIREMENT_INFO,
     );
@@ -45,12 +53,14 @@ function _ckeditor_media_embed_requirments_build_description($installed_plugins,
   $description = '';
 
   if (!empty($missing_plugins)) {
-    $description .= t('The following CKEditor plugins are <strong>missing: %plugins</strong>.', array('%plugins' => implode(', ', array_keys($missing_plugins)))) . '<br />';
-    $description .= t('To install the missing CKEditor plugins run <code>drupal ckeditor_media_embed:install</code> if you have <a href="https://drupalconsole.com/" target="_blank">Drupal Console</a> installed. Otherwise, please see the <a href="!readme">README.txt</a> for additional install methods.', array('!readme' => '/' . drupal_get_path('module', 'ckeditor_media_embed') . '/README.md')) . '<br />';
+    $description .= t('The following CKEditor plugins are missing: <strong>%plugins</strong>.', array('%plugins' => implode(', ', array_keys($missing_plugins)))) . '<br />';
+    $description .=_ckeditor_media_embed_get_install_instructions(FALSE) . '<br />';
   }
   if (!empty($installed_plugins)) {
-    $description .= t('The following CKEditor plugins are installed: %plugins.', array('%plugins' => implode(', ', array_keys($installed_plugins))));
+    $description .= t('The following CKEditor plugins are installed: %plugins.', array('%plugins' => implode(', ', array_keys($installed_plugins)))) . '<br />';
   }
+
+  $description .= t('CKEditor version: @version', array('@version' => AssetManager::getCKEditorVersion(\Drupal::service('library.discovery'))));
 
   return Markup::Create($description);
 }

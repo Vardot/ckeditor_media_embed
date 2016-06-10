@@ -32,13 +32,13 @@ class AssetManager {
   }
 
   /**
-   * @todo: Document.
+   * Retrieve the install status of all CKEditor plugins.
    */
-  public static function getPluginsInstallStatuses($base_path = '') {
+  public static function getPluginsInstallStatuses() {
     $plugin_statuses = array();
 
     foreach (self::getPlugins() as $plugin_name) {
-      $plugin_statuses[$plugin_name] = self::pluginIsInstalled($plugin_name, $base_path);
+      $plugin_statuses[$plugin_name] = self::pluginIsInstalled($plugin_name);
     }
 
     return $plugin_statuses;
@@ -47,11 +47,11 @@ class AssetManager {
   /**
    * @todo: Document.
    */
-  public static function pluginsAreInstalled($base_path) {
+  public static function pluginsAreInstalled() {
     $installed = TRUE;
 
     foreach (self::getPlugins() as $plugin_name) {
-      if (!pluginIsInstalled($plugin_name, $base_path)) {
+      if (!self::pluginIsInstalled($plugin_name)) {
         $installed = FALSE;
       }
     }
@@ -62,10 +62,10 @@ class AssetManager {
   /**
    * @todo: Document.
    */
-  public static function pluginIsInstalled($plugin_name, $base_path = '') {
+  public static function pluginIsInstalled($plugin_name) {
     $is_installed = FALSE;
 
-    $library_plugin_path = self::getCKEditorLibraryPluginPath($base_path) . $plugin_name;
+    $library_plugin_path = self::getCKEditorLibraryPluginDirectory() . $plugin_name;
     if (is_dir($library_plugin_path) && is_file($library_plugin_path . '/plugin.js')) {
       $is_installed = TRUE;
     }
@@ -91,9 +91,15 @@ class AssetManager {
   /**
    * @todo: Document.
    */
-  public static function getCKEditorLibraryPluginPath($base_path = '') {
-    $base_path = !empty($base_path) ? $base_path : base_path();
-    return $base_path . 'libraries/ckeditor/plugins/';
+  public static function getCKEditorLibraryPluginPath() {
+    return base_path() . 'libraries/ckeditor/plugins/';
+  }
+
+  /**
+   * @todo: Document.
+   */
+  public static function getCKEditorLibraryPluginDirectory() {
+    return DRUPAL_ROOT . '/libraries/ckeditor/plugins/';
   }
 
   /**
