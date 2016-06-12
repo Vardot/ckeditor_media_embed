@@ -27,7 +27,7 @@ function ckeditor_media_embed_requirements($phase) {
   $requirements = array();
 
   if ($phase === 'runtime') {
-    $plugin_statuses = AssetManager::getPluginsInstallStatuses(DRUPAL_ROOT . '/');
+    $plugin_statuses = AssetManager::getPluginsInstallStatuses(\Drupal::root() . '/');
 
     $installed_plugins = array_filter($plugin_statuses);
     $missing_plugins = array_filter($plugin_statuses, function($is_installed) {

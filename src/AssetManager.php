@@ -128,7 +128,7 @@ class AssetManager {
    */
   // @codingStandardsIgnoreLine
   public static function getCKEditorLibraryPluginDirectory() {
-    return DRUPAL_ROOT . '/libraries/ckeditor/plugins/';
+    return \Drupal::root() . '/libraries/ckeditor/plugins/';
   }
 
   /**
