@@ -19,6 +19,7 @@ then follow the instructions for installing the CKEditor plugins below.
 
 1. Download the [Full "dev" package for CKEditor](https://github.com/ckeditor/ckeditor-dev/archive/release/4.5.x.zip).
 2. Unzip the package and place its contents into `DRUPAL_ROOT/libraries/ckeditor`.
+3. Clear the cache
 
 #### Hardest
 
@@ -35,6 +36,7 @@ then follow the instructions for installing the CKEditor plugins below.
 2. Unzip and place the contents for each plugin in the the following directory:
 
   * `DRUPAL_ROOT/libraries/ckeditor/plugins/PLUGIN_NAME`
+3. Clear the cache
 
 ## Configuration
 
