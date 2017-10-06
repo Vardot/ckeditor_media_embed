@@ -146,8 +146,8 @@ class Embed implements EmbedInterface {
     $embed_node->setAttribute('class', $this->getClass($embed));
 
     $child = NULL;
-    $embed_document = HTML::load($embed->html);
-    foreach ($embed_document->childNodes as $child) {
+    $embed_body_node = HTML::load($embed->html)->getElementsByTagName('body')->item(0);
+    foreach ($embed_body_node->childNodes as $child) {
       if ($child = $node->ownerDocument->importNode($child, TRUE)) {
         $embed_node->appendChild($child);
       }
