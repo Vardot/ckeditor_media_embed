@@ -66,7 +66,12 @@ function _ckeditor_media_embed_requirments_build_description($installed_plugins,
     $description .= t('The following CKEditor plugins are installed: %plugins.', array('%plugins' => implode(', ', array_keys($installed_plugins)))) . '<br />';
   }
 
-  $description .= t('CKEditor version: @version', array('@version' => AssetManager::getCKEditorVersion(\Drupal::service('library.discovery'))));
+  $installed_plugin_versions = AssetManager::getPluginsInstalledVersion(\Drupal::service('config.factory'));
+  if (!empty($installed_plugin_versions)) {
+    $description = t('Installed plugins version: @version', array('@version' => $installed_plugin_versions)) . '<br />';
+  }
+
+  $description .= t('CKEditor version: @version', array('@version' => AssetManager::getCKEditorVersion(\Drupal::service('library.discovery'), \Drupal::service('config.factory'))));
 
   return Markup::Create($description);
 }

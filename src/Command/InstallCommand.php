@@ -5,6 +5,7 @@ namespace Drupal\ckeditor_media_embed\Command;
 use Alchemy\Zippy\Zippy;
 use Drupal\ckeditor_media_embed\AssetManager;
 use Drupal\ckeditor\CKEditorPluginManager;
+use Drupal\Core\Config\ConfigFactory;
 use Drupal\Console\Annotations\DrupalCommand;
 use Drupal\Console\Core\Command\Shared\ContainerAwareCommandTrait;
 use Drupal\Console\Core\Style\DrupalStyle;
@@ -47,6 +48,11 @@ class InstallCommand extends Command {
   protected $libraryDiscovery;
 
   /**
+   * @var ConfigFactory
+   */
+  protected $configFactory;
+
+  /**
    * @var Site
    */
   protected $site;
@@ -61,12 +67,12 @@ class InstallCommand extends Command {
   /**
    * {@inheritdoc}
    */
-  public function __construct(CKEditorPluginManager $ckeditorPluginManager, LibraryDiscovery $libraryDiscovery, Client $httpClient) {
+  public function __construct(CKEditorPluginManager $ckeditorPluginManager, LibraryDiscovery $libraryDiscovery, Client $httpClient, ConfigFactory $configFactory) {
     parent::__construct();
-
     $this->ckeditorPluginManager = $ckeditorPluginManager;
     $this->libraryDiscovery = $libraryDiscovery;
     $this->httpClient = $httpClient;
+    $this->configFactory = $configFactory;
 
     $this->fileSystem = new Filesystem();
     $this->setPackageVersion();
@@ -93,6 +99,7 @@ class InstallCommand extends Command {
       $this->installCKeditorPlugin($io, $package_directory, $plugin);
     }
 
+    $this->configFactory->getEditable('ckeditor_media_embed.settings')->set('plugins_version_installed', $this->packageVersion)->save();
     $this->ckeditorPluginManager->clearCachedDefinitions();
   }
 
@@ -102,8 +109,7 @@ class InstallCommand extends Command {
    * @return $this
    */
   protected function setPackageVersion() {
-    $this->packageVersion = AssetManager::getCKEditorVersion($this->libraryDiscovery);
-
+    $this->packageVersion = AssetManager::getCKEditorVersion($this->libraryDiscovery, $this->configFactory);
     return $this;
   }
 

@@ -58,6 +58,8 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
         <strong>In order to use the Semantic Embed the "Convert Oembed tags to media embeds" filter must be enabled on the text format that uses it.</strong>') . '</dd>';
       $output .= '<h3>' . t('Autoembed') . '</h3>';
       $output .= '<p>' . t('Depending on which option is selected "Media Embed" or "Semantic Media Embed" when a media URL is inserted in to the field it will automatically be replaced with the correct media embed automatically.') . '</p>';
+      $output .= '<h3>' . t('Changing the CKEditor Version') . '</h3>';
+      $output .= '<p>' . t('By default, when running "drupal ckeditor_media_embed:install" to download the required plugins, the Drupal Core CKEditor version is parsed for and used. If you wish to use a different version of CKEditor, you can change the version by running either "drupal cdit" with DrupalConsole or "drush config-edit" with Drush, selecting ckeditor_media_embed.settings, and changing the ckeditor_version key to the version you would like to use. Be sure to run "drupal ckeditor_media_embed:install" again to actually download the new plugins.') . '</p>';
       $output .= '</dl>';
       return $output;
   }
