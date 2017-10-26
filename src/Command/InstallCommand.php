@@ -15,7 +15,9 @@ use GuzzleHttp\Client;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -93,14 +95,29 @@ class InstallCommand extends Command {
   protected function execute(InputInterface $input, OutputInterface $output) {
     $io = new DrupalStyle($input, $output);
 
-    $package_directory = $this->downloadCKEditorFull($io);
+    if ($overwrite = $this->askToOverwritePluginFiles($input, $output)) {
+      $package_directory = $this->downloadCKEditorFull($io);
 
-    foreach (AssetManager::getPlugins() as $plugin) {
-      $this->installCKeditorPlugin($io, $package_directory, $plugin);
+      foreach (AssetManager::getPlugins() as $plugin) {
+        $this->installCKeditorPlugin($io, $package_directory, $plugin, $overwrite);
+      }
+
+      $this->configFactory->getEditable('ckeditor_media_embed.settings')->set('plugins_version_installed', $this->packageVersion)->save();
+      $this->ckeditorPluginManager->clearCachedDefinitions();
     }
+  }
 
-    $this->configFactory->getEditable('ckeditor_media_embed.settings')->set('plugins_version_installed', $this->packageVersion)->save();
-    $this->ckeditorPluginManager->clearCachedDefinitions();
+  /**
+   * Present question to user about overwritting the plugin files.
+   */
+  protected function askToOverwritePluginFiles(InputInterface $input, OutputInterface $output) {
+    $helper = $this->getHelper('question');
+    $question = new ConfirmationQuestion(sprintf(
+        $this->trans('commands.ckeditor_media_embed.install.messages.question-overwrite-files'),
+        AssetManager::getCKEditorLibraryPluginDirectory()
+      ), FALSE);
+
+    return $helper->ask($input, $output, $question);
   }
 
   /**
@@ -126,13 +143,13 @@ class InstallCommand extends Command {
    * @return $this
    */
   // @codingStandardsIgnoreLine
-  protected function installCKeditorPlugin(DrupalStyle $io, $package_directory, $plugin_name) {
+  protected function installCKeditorPlugin(DrupalStyle $io, $package_directory, $plugin_name, $overwrite = FALSE) {
     $libraries_path = AssetManager::getCKEditorLibraryPluginDirectory() . $plugin_name;
     $package_plugin_path = $package_directory . '/plugins/' . $plugin_name;
 
     try {
       $this->fileSystem->mkdir($libraries_path);
-      $this->fileSystem->mirror($package_plugin_path, $libraries_path);
+      $this->fileSystem->mirror($package_plugin_path, $libraries_path, NULL, ['override' => $overwrite]);
 
       $io->success(
         sprintf(
