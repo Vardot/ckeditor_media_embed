@@ -111,13 +111,18 @@ class InstallCommand extends Command {
    * Present question to user about overwritting the plugin files.
    */
   protected function askToOverwritePluginFiles(InputInterface $input, OutputInterface $output) {
-    $helper = $this->getHelper('question');
-    $question = new ConfirmationQuestion(sprintf(
-        $this->trans('commands.ckeditor_media_embed.install.messages.question-overwrite-files'),
-        AssetManager::getCKEditorLibraryPluginDirectory()
-      ), FALSE);
+    $libraries_path = AssetManager::getCKEditorLibraryPluginDirectory();
+    if (file_exists($libraries_path)) {
+      $helper = $this->getHelper('question');
+      $question = new ConfirmationQuestion(sprintf(
+          $this->trans('commands.ckeditor_media_embed.install.messages.question-overwrite-files'),
+          $libraries_path
+        ), FALSE);
 
-    return $helper->ask($input, $output, $question);
+      return $helper->ask($input, $output, $question);
+    }
+
+    return TRUE;
   }
 
   /**
