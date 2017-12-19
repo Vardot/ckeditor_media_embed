@@ -36,7 +36,7 @@ class AssetManager {
    * Retrieve the install status of all CKEditor plugins.
    */
   public static function getPluginsInstallStatuses() {
-    $plugin_statuses = array();
+    $plugin_statuses = [];
 
     foreach (self::getPlugins() as $plugin_name) {
       $plugin_statuses[$plugin_name] = self::pluginIsInstalled($plugin_name);

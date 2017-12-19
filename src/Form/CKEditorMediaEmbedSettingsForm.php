@@ -83,10 +83,10 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
 
     if (!AssetManager::pluginsAreInstalled()) {
       drupal_set_message(_ckeditor_media_embed_get_install_instructions(), 'warning');
-      return array();
+      return [];
     }
 
-    $form['embed_provider'] = array(
+    $form['embed_provider'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Provider URL'),
       '#default_value' => $config->get('embed_provider'),
@@ -95,12 +95,12 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
         <strong>Example</strong> <code>//example.com/api/oembed-proxy?resource-url={url}&callback={callback}&api_token=MYAPITOKEN</code><br />
         <strong>Default</strong> <code>//ckeditor.iframe.ly/api/oembed?url={url}&callback={callback}</code><br />
       '),
-    );
+    ];
 
     if ($this->moduleHandler->moduleExists('help')) {
       $form['embed_provider']['#description'] .= $this->t('Check out the <a href=":help">help</a> page for more information.<br />',
-        array(':help' => $this->urlGenerator->generateFromRoute('help.page', array('name' => 'ckeditor_media_embed')))
-      );
+        [':help' => $this->urlGenerator->generateFromRoute('help.page', ['name' => 'ckeditor_media_embed'])
+      ]);
     }
 
     return parent::buildForm($form, $form_state);

@@ -210,7 +210,7 @@ class InstallCommand extends Command {
   }
 
   public function downloadFile($url, $destination) {
-    $this->httpClient->get($url, array('sink' => $destination));
+    $this->httpClient->get($url, ['sink' => $destination]);
     return file_exists($destination);
   }
 }
