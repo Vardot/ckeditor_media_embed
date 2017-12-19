@@ -92,8 +92,10 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('embed_provider'),
       '#description' => $this->t('A template for the URL of the provider endpoint.
         This URL will be queried for each resource to be embedded. By default CKEditor uses the Iframely service.<br />
+        <em>Note that if you wish to support HTTPS with Iframely then you must create an account. Please read their <a href="https://iframely.com/docs/ckeditor">documentation</a> for more details.</em><br />
         <strong>Example</strong> <code>//example.com/api/oembed-proxy?resource-url={url}&callback={callback}&api_token=MYAPITOKEN</code><br />
-        <strong>Default</strong> <code>//ckeditor.iframe.ly/api/oembed?url={url}&callback={callback}</code><br />
+        <strong>Default</strong> <code>http://ckeditor.iframe.ly/api/oembed?url={url}&callback={callback}</code>
+        <br />
       '),
     ];
 
