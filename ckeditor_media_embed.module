@@ -32,6 +32,10 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
       $output .= '<dt>' . t('Embed media resoruces') . '</dt>';
       $output .= '<dd>' . t('During content creation the author may add embed resources (videos, images, tweets, etc.) hosted by other services (called the "content providers") in content via CKEditor. By default the plugin uses the <a href=":iframely" target="_blank">Iframely</a> proxy service which supports over <a href=":providers" target="blank">1715 content providers</a> such as Youtube, Vimeo, Twitter, Insagram, Imgur, GitHub, and Google Maps.', [':iframely' => 'https://iframely.com/', ':providers' => 'https://iframely.com/domains']) . '</dd>';
       $output .= '</dl>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Media resource field') . '</dt>';
+      $output .= '<dd>' . t('Provides a link field formatter that will render the link using the configured oembed media provider.') . '</dd>';
+      $output .= '</dl>';
       $output .= '<h3>' . t('Provider') . '</h3>';
       $output .= '<p>' . t('Only a single provider may be configured at a time, however, it is recommended to use a proxy service like <a href=":iframely" target="_blank">Iframely</a> or <a href=":noembed" target="_blank">Noembed</a> so that many different media providers can be supported. You may also use a specific media provider so the embeds are limited to the embed types it supports.', [':iframely' => 'https://iframely.com/', ':noembed' => 'https://noembed.com/']) . '</p>';
       $output .= '<dl>';
