@@ -93,7 +93,7 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
 
     $version = AssetManager::getCKEditorVersion($this->libraryDiscovery, $this->configFactory);
     if (!AssetManager::pluginsAreInstalled($version)) {
-      drupal_set_message(_ckeditor_media_embed_get_install_instructions(), 'warning');
+      $this->messenger()->addWarning(_ckeditor_media_embed_get_install_instructions());
       return [];
     }
 

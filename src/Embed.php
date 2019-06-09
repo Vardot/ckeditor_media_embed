@@ -2,6 +2,8 @@
 
 namespace Drupal\ckeditor_media_embed;
 
+use Drupal\Core\Link;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\Html;
@@ -40,6 +42,13 @@ class Embed implements EmbedInterface {
   protected $requestStack;
 
   /**
+   * The messenger.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * Constructs an Embed object.
    *
    * @param ClientInterface $httpClient
@@ -48,12 +57,15 @@ class Embed implements EmbedInterface {
    *   The url assembler used to create url from a parsed url.
    * @param RequestStack $requestStack
    *   The request stack.
+   *  @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger.
    */
-  public function __construct(ClientInterface $httpClient, UnroutedUrlAssemblerInterface $urlAssembler, RequestStack $requestStack) {
+  public function __construct(ClientInterface $httpClient, UnroutedUrlAssemblerInterface $urlAssembler, RequestStack $requestStack, MessengerInterface $messenger) {
     $this->httpClient = $httpClient;
     $this->urlAssembler = $urlAssembler;
     $this->requestStack = $requestStack;
     $this->setEmbedProvider(\Drupal::config('ckeditor_media_embed.settings')->get('embed_provider'));
+    $this->messenger = $messenger;
   }
 
   /**
@@ -81,7 +93,7 @@ class Embed implements EmbedInterface {
       $embed = json_decode($response->getBody());
     }
     catch (TransferException $e) {
-      drupal_set_message(t('Unable to retrieve @url at this time, please check again later.', ['@url' => $url]), 'warning');
+      $this->messenger->addWarning(t('Unable to retrieve @url at this time, please check again later.', ['@url' => $url]));
       watchdog_exception('ckeditor_media_embed', $e);
     }
 
@@ -128,7 +140,7 @@ class Embed implements EmbedInterface {
    */
   public function getSettingsLink() {
     $url = URL::fromRoute('ckeditor_media_embed.ckeditor_media_embed_settings_form', ['destination' => \Drupal::service('path.current')->getPath()]);
-    return Markup::create(\Drupal::l($this->t('CKEditor Media Embed plugin settings page'), $url));
+    return Markup::create(Link::fromTextAndUrl($this->t('CKEditor Media Embed plugin settings page'), $url)->toString());
   }
 
   /**

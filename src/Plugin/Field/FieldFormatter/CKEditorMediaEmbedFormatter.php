@@ -22,7 +22,7 @@ class CKEditorMediaEmbedFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
-    $element = array();
+    $element = [];
 
     foreach ($items as $delta => $item) {
       $url = $item->getUrl();
@@ -31,21 +31,21 @@ class CKEditorMediaEmbedFormatter extends FormatterBase {
       $output = $embed->getEmbedObject($url->toUriString());
 
       if (isset($output->html)) {
-        $element[$delta] = array(
+        $element[$delta] = [
           '#type' => 'inline_template',
           '#template' => '{{ content|raw }}',
-          '#context' => array(
+          '#context' => [
             'content' => $output->html,
-          ),
-        );
+          ],
+        ];
       }
       else {
         // If we didn't get an oembed response, just show the URL.
-        $element[$delta] = array(
+        $element[$delta] = [
           '#type' => 'link',
           '#url' => $url,
           '#title' => $url->toString(),
-        );
+        ];
       }
     }
 
