@@ -3,10 +3,9 @@
 namespace Drupal\ckeditor_media_embed\Plugin\CKEditorPlugin;
 
 use Drupal\ckeditor_media_embed\AssetManager;
+use Drupal\ckeditor_media_embed\CKEditorVersionAwarePluginBase;
 
-use Drupal\Core\Plugin\PluginBase;
 use Drupal\editor\Entity\Editor;
-use Drupal\ckeditor\CKEditorPluginInterface;
 use Drupal\ckeditor\CKEditorPluginConfigurableInterface;
 use Drupal\ckeditor\CKEditorPluginContextualInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -20,7 +19,7 @@ use Drupal\Core\Form\FormStateInterface;
  *   module = "ckeditor_media_embed"
  * )
  */
-class AutoEmbed extends PluginBase implements CKEditorPluginInterface, CKEditorPluginContextualInterface, CKEditorPluginConfigurableInterface {
+class AutoEmbed extends CKEditorVersionAwarePluginBase implements CKEditorPluginConfigurableInterface, CKEditorPluginContextualInterface {
 
   /**
    * {@inheritdoc}
@@ -35,11 +34,25 @@ class AutoEmbed extends PluginBase implements CKEditorPluginInterface, CKEditorP
       'notification',
     ];
 
+    if ($this->needsTextMatchDependency()) {
+      $dependencies[] = 'textmatch';
+    }
+
     if ($embed_plugin = $settings['plugins']['autoembed']['status']) {
       $dependencies[] = $embed_plugin;
     }
 
     return $dependencies;
+  }
+
+  /**
+   * Determine if the textmatch plugin is needed as a dependency.
+   *
+   * @return bool
+   *   Returns TRUE if the textmatch plugin is necessary.
+   */
+  public function needsTextMatchDependency() {
+    return $this->versionCompare('4.11') >= 0;
   }
 
   /**

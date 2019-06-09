@@ -20,8 +20,12 @@ class AssetManager {
    * @return array
    *    An array of CKEditor plugin names that will be installed.
    */
-  public static function getPlugins() {
-    return [
+  public static function getPlugins($version = '') {
+    if (empty($version)) {
+      $version = self::$libraryVersion;
+    }
+
+    $plugins = [
       'autoembed',
       'autolink',
       'embed',
@@ -30,15 +34,22 @@ class AssetManager {
       'notification',
       'notificationaggregator',
     ];
+
+    // Text match was added as a new dependency of autolink as of 4.11.
+    if (version_compare($version, '4.11', '>=')) {
+      $plugins[] = 'textmatch';
+    }
+
+    return $plugins;
   }
 
   /**
    * Retrieve the install status of all CKEditor plugins.
    */
-  public static function getPluginsInstallStatuses() {
+  public static function getPluginsInstallStatuses($version = '') {
     $plugin_statuses = [];
 
-    foreach (self::getPlugins() as $plugin_name) {
+    foreach (self::getPlugins($version) as $plugin_name) {
       $plugin_statuses[$plugin_name] = self::pluginIsInstalled($plugin_name);
     }
 
@@ -52,10 +63,10 @@ class AssetManager {
    *   Returns TRUE if all of our CKEditor plugins are installed and FALSE
    *   otherwise.
    */
-  public static function pluginsAreInstalled() {
+  public static function pluginsAreInstalled($version = '') {
     $installed = TRUE;
 
-    foreach (self::getPlugins() as $plugin_name) {
+    foreach (self::getPlugins($version) as $plugin_name) {
       if (!self::pluginIsInstalled($plugin_name)) {
         $installed = FALSE;
       }
@@ -103,7 +114,7 @@ class AssetManager {
    *   The version number of the currently installed CKEditor.
    */
   // @codingStandardsIgnoreLine
-  public static function getCKEditorVersion(LibraryDiscoveryInterface $library_discovery, ConfigFactory $config_factory, $path = "core", $extension = "core") {
+  public static function getCKEditorVersion(LibraryDiscoveryInterface $library_discovery, ConfigFactory $config_factory, $path = 'core', $extension = 'core') {
     $config_version = $config_factory->get('ckeditor_media_embed.settings')->get('ckeditor_version');
     if(!empty($config_version)){
       return $config_version;
@@ -124,6 +135,34 @@ class AssetManager {
    */
   public static function getPluginsInstalledVersion(ConfigFactory $config_factory) {
     return $config_factory->get('ckeditor_media_embed.settings')->get('plugins_version_installed');
+  }
+
+  /**
+   * Get the plugins version.
+   *
+   * @param LibraryDiscoveryInterface $library_discovery
+   *   The library discovery service to use for retrieving information about
+   *   the CKeditor library.
+   * @param ConfigFactory
+   *   The config factory service to use for retrieving configuration
+   *   information about CKeditor Media Embed.
+   * @param string $path
+   *   The path to the library yml file, from the root. Defaults to 'core'.
+   * @param string $extension
+   *   The extension type of the library file. Defaults to 'core'.
+   *
+   * @return string
+   *   The version number of the currently installed CKEditor plugins or if not
+   *   installed the version of the installed CKEditor.
+   */
+  public static function getPluginsVersion(LibraryDiscoveryInterface $library_discovery, ConfigFactory $config_factory, $path = 'core', $extension = 'core') {
+    $version = self::getPluginsInstalledVersion($config_factory);
+
+    if (empty($version)) {
+      $version = self::getCKEditorVersion($library_discovery, $config_factory);
+    }
+
+    return $version;
   }
 
   /*

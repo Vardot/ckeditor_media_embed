@@ -98,7 +98,7 @@ class InstallCommand extends Command {
     if ($overwrite = $this->askToOverwritePluginFiles($input, $output)) {
       $package_directory = $this->downloadCKEditorFull($io);
 
-      foreach (AssetManager::getPlugins() as $plugin) {
+      foreach (AssetManager::getPlugins($this->packageVersion) as $plugin) {
         $this->installCKeditorPlugin($io, $package_directory, $plugin, $overwrite);
       }
 

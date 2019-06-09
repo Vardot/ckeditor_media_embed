@@ -32,6 +32,7 @@ then follow the instructions for installing the CKEditor plugins below.
   * [Auto Link](http://ckeditor.com/addon/autolink)
   * [Notification](http://ckeditor.com/addon/notification)
   * [Notification Aggregator](http://ckeditor.com/addon/notificationaggregator)
+  * [Text Match](https://ckeditor.com/cke4/addon/textmatch) (As of CKEditor 4.11)
 
 2. Unzip and place the contents for each plugin in the the following directory:
 
@@ -73,3 +74,4 @@ This module also includes all additional non-core depdencies for the Media Embed
 * [Auto Link](http://ckeditor.com/addon/autolink)
 * [Notification](http://ckeditor.com/addon/notification)
 * [Notification Aggregator](http://ckeditor.com/addon/notificationaggregator)
+* [Text Match](https://ckeditor.com/cke4/addon/textmatch)
