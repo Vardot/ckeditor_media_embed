@@ -84,10 +84,22 @@ function ckeditor_media_embed_ckeditor_plugin_info_alter(array &$plugins) {
     return $acc;
   }, TRUE);
 
+  $uninstalled_plugins = [];
   foreach ($plugin_statuses as $plugin_name => $is_installed) {
     if (!$all_installed && !empty($plugins[$plugin_name])) {
       unset($plugins[$plugin_name]);
     }
+
+    if (!$is_installed) {
+      $uninstalled_plugins[] = $plugin_name;
+    }
+  }
+
+  if (!$all_installed) {
+    \Drupal::logger('ckeditor_media_embed')->error('The following plugins are missing: @uninstalled_plugins. <br />@install_message', [
+      '@uninstalled_plugins' => implode(', ', $uninstalled_plugins),
+      '@install_message' => _ckeditor_media_embed_get_install_instructions(FALSE),
+    ]);
   }
 }
 
