@@ -47,10 +47,6 @@ class CKEditorMediaEmbedFormatter extends FormatterBase implements ContainerFact
    *   The view mode.
    * @param array $third_party_settings
    *   Third party settings.
-   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
-   *   The date formatter service.
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The current request.
    * @param \Drupal\ckeditor_media_embed\EmbedInterface $embed
    *   The embed service.
    */
