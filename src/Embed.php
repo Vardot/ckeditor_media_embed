@@ -2,8 +2,10 @@
 
 namespace Drupal\ckeditor_media_embed;
 
+use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Link;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\Html;
@@ -18,6 +20,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * The default CKEditor Media Embed class.
  */
 class Embed implements EmbedInterface {
+
   use StringTranslationTrait;
 
   /**
@@ -30,14 +33,14 @@ class Embed implements EmbedInterface {
   /**
    * The unrouted URL assembler service.
    *
-   * @var Drupal\Core\Utility\UnroutedUrlAssemblerInterface
+   * @var \Drupal\Core\Utility\UnroutedUrlAssemblerInterface
    */
   protected $urlAssembler;
 
   /**
    * The request stack.
    *
-   * @var Symfony\Component\HttpFoundation\RequestStack
+   * @var \Symfony\Component\HttpFoundation\RequestStack
    */
   protected $requestStack;
 
@@ -49,23 +52,45 @@ class Embed implements EmbedInterface {
   protected $messenger;
 
   /**
+   * The config factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactory
+   */
+  protected $configFactory;
+
+  /**
+   * The current path service.
+   *
+   * @var \Drupal\Core\Path\CurrentPathStack
+   */
+  protected $currentPath;
+
+  /**
    * Constructs an Embed object.
    *
-   * @param ClientInterface $httpClient
+   * @param \GuzzleHttp\ClientInterface $http_client
    *   The http client used to do retrieval of embed codes.
-   * @param UnroutedUrlAssemblerInterface $urlAssembler
+   * @param \Drupal\Core\Utility\UnroutedUrlAssemblerInterface $url_assembler
    *   The url assembler used to create url from a parsed url.
-   * @param RequestStack $requestStack
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request stack.
-   *  @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger.
+   * @param \Drupal\Core\Config\ConfigFactory $config_factory
+   *   The config factory service.
+   * @param \Drupal\Core\Path\CurrentPathStack $current_path
+   *   The current path service.
    */
-  public function __construct(ClientInterface $httpClient, UnroutedUrlAssemblerInterface $urlAssembler, RequestStack $requestStack, MessengerInterface $messenger) {
-    $this->httpClient = $httpClient;
-    $this->urlAssembler = $urlAssembler;
-    $this->requestStack = $requestStack;
-    $this->setEmbedProvider(\Drupal::config('ckeditor_media_embed.settings')->get('embed_provider'));
+  public function __construct(ClientInterface $http_client, UnroutedUrlAssemblerInterface $url_assembler, RequestStack $request_stack, MessengerInterface $messenger, ConfigFactory $config_factory, CurrentPathStack $current_path) {
+    $this->httpClient = $http_client;
+    $this->urlAssembler = $url_assembler;
+    $this->requestStack = $request_stack;
+    $this->configFactory = $config_factory;
     $this->messenger = $messenger;
+    $this->currentPath = $current_path;
+
+    $embed_provider = $this->configFactory->get('ckeditor_media_embed.settings')->get('embed_provider');
+    $this->setEmbedProvider($embed_provider);
   }
 
   /**
@@ -74,7 +99,7 @@ class Embed implements EmbedInterface {
   public function setEmbedProvider($provider) {
     $provider_parsed = UrlHelper::parse($provider);
 
-    $provider_parsed['query'] = array_filter($provider_parsed['query'], function($value) {
+    $provider_parsed['query'] = array_filter($provider_parsed['query'], function ($value) {
       return ($value !== '{callback}');
     });
 
@@ -93,7 +118,7 @@ class Embed implements EmbedInterface {
       $embed = json_decode($response->getBody());
     }
     catch (TransferException $e) {
-      $this->messenger->addWarning(t('Unable to retrieve @url at this time, please check again later.', ['@url' => $url]));
+      $this->messenger->addWarning($this->t('Unable to retrieve @url at this time, please check again later.', ['@url' => $url]));
       watchdog_exception('ckeditor_media_embed', $e);
     }
 
@@ -139,7 +164,7 @@ class Embed implements EmbedInterface {
    * {@inheritdoc}
    */
   public function getSettingsLink() {
-    $url = URL::fromRoute('ckeditor_media_embed.ckeditor_media_embed_settings_form', ['destination' => \Drupal::service('path.current')->getPath()]);
+    $url = URL::fromRoute('ckeditor_media_embed.ckeditor_media_embed_settings_form', ['destination' => $this->currentPath->getPath()]);
     return Markup::create(Link::fromTextAndUrl($this->t('CKEditor Media Embed plugin settings page'), $url)->toString());
   }
 
@@ -177,7 +202,7 @@ class Embed implements EmbedInterface {
    *   The embed json decoded object as provided by Embed::getEmbedOjbect().
    *
    * @return string
-   *    The safe HTML class string to apply the new embed html node.
+   *   The safe HTML class string to apply the new embed html node.
    */
   protected function getClass($embed) {
     return 'embed-media ' . HTML::getClass("embed-media--$embed->type-$embed->provider_name");

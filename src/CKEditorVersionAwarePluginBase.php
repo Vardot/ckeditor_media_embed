@@ -2,8 +2,6 @@
 
 namespace Drupal\ckeditor_media_embed;
 
-use Drupal\ckeditor_media_embed\AssetManager;
-
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\ckeditor\CKEditorPluginInterface;
 use Drupal\Core\Asset\LibraryDiscoveryInterface;
@@ -17,11 +15,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class CKEditorVersionAwarePluginBase extends PluginBase implements CKEditorPluginInterface, ContainerFactoryPluginInterface {
 
   /**
+   * The library discovery service.
+   *
    * @var \Drupal\Core\Asset\LibraryDiscoveryInterface
    */
   protected $libraryDiscovery;
 
   /**
+   * The config factory service.
+   *
    * @var \Drupal\Core\Config\ConfigFactory
    */
   protected $configFactory;
@@ -37,7 +39,7 @@ abstract class CKEditorVersionAwarePluginBase extends PluginBase implements CKEd
    *   The plugin implementation definition.
    * @param \Drupal\Core\Asset\LibraryDiscoveryInterface $library_discovery
    *   The library discovery service.
-  * @param \Drupal\Core\Config\ConfigFactory $config_factory
+   * @param \Drupal\Core\Config\ConfigFactory $config_factory
    *   The config factory service.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, LibraryDiscoveryInterface $library_discovery, ConfigFactory $config_factory) {
@@ -82,7 +84,7 @@ abstract class CKEditorVersionAwarePluginBase extends PluginBase implements CKEd
    *   Returns returns -1 if the first version is lower than the specified
    *   version, 0 if they are equal, and 1 if the specified version is lower.
    *
-   * @see version_compare().
+   * @see version_compare()
    */
   protected function versionCompare($version) {
     $plugins_version = AssetManager::getPluginsVersion($this->libraryDiscovery, $this->configFactory);

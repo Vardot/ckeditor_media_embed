@@ -18,7 +18,7 @@ class AssetManager {
    * Retrieve a list of all plugins to install.
    *
    * @return array
-   *    An array of CKEditor plugin names that will be installed.
+   *   An array of CKEditor plugin names that will be installed.
    */
   public static function getPlugins($version = '') {
     if (empty($version)) {
@@ -99,10 +99,10 @@ class AssetManager {
   /**
    * Retrieve version number of the currently installed CKEditor.
    *
-   * @param LibraryDiscoveryInterface $library_discovery
+   * @param \Drupal\Core\Asset\LibraryDiscoveryInterface $library_discovery
    *   The library discovery service to use for retrieving information about
    *   the CKeditor library.
-   * @param ConfigFactory
+   * @param \Drupal\Core\Config\ConfigFactory
    *   The config factory service to use for retrieving configuration
    *   information about CKeditor Media Embed.
    * @param string $path
@@ -116,18 +116,18 @@ class AssetManager {
   // @codingStandardsIgnoreLine
   public static function getCKEditorVersion(LibraryDiscoveryInterface $library_discovery, ConfigFactory $config_factory, $path = 'core', $extension = 'core') {
     $config_version = $config_factory->get('ckeditor_media_embed.settings')->get('ckeditor_version');
-    if(!empty($config_version)){
+    if (!empty($config_version)) {
       return $config_version;
     }
 
-    $parsed_version =  self::parseForCoreCKEditorVersion($path, $extension);
+    $parsed_version = self::parseForCoreCKEditorVersion($path, $extension);
     return empty($parsed_version) ? self::$libraryVersion : $parsed_version;
   }
 
   /**
    * Retrieve the currently installed version of the CKEditor plugins.
    *
-   * @param ConfigFactory
+   * @param \Drupal\Core\Config\ConfigFactory $config_factory
    *   The config factory service to use for retrieving configuration settings.
    *
    * @return string
@@ -140,10 +140,10 @@ class AssetManager {
   /**
    * Get the plugins version.
    *
-   * @param LibraryDiscoveryInterface $library_discovery
+   * @param \Drupal\Core\Asset\LibraryDiscoveryInterface $library_discovery
    *   The library discovery service to use for retrieving information about
    *   the CKeditor library.
-   * @param ConfigFactory
+   * @param \Drupal\Core\Config\ConfigFactory $config_factory
    *   The config factory service to use for retrieving configuration
    *   information about CKeditor Media Embed.
    * @param string $path
@@ -165,21 +165,20 @@ class AssetManager {
     return $version;
   }
 
-  /*
-   * Parse the core libraries to get the current version of CKEditor
+  /**
+   * Parse the core libraries to get the current version of CKEditor.
    *
    * @param string $path
    *   The path to the library from the root.
    * @param string $extension
-   *   The extension type of the library
+   *   The extension type of the library.
    *
    * @return string
    *   Core's version of CKEditor.
    *
-   * @see LibraryDiscoveryParser::parseLibraryInfo(). We use our own as Drupal's
-   *      currently can falsely alter the version of the CKEditor library due
-   *      https://www.drupal.org/node/2451411.
+   * @see \Drupal\Core\Asset\LibraryDiscoveryParser::parseLibraryInfo()
    */
+  // @codingStandardsIgnoreLine
   protected static function parseForCoreCKEditorVersion($path, $extension){
     $version = '';
     $libraries = [];

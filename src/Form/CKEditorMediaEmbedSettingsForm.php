@@ -50,6 +50,9 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
    *   The module handler.
    * @param \Drupal\Core\Routing\UrlGeneratorInterface $url_generator
    *   The URL generator.
+   * @param \Drupal\Core\Asset\LibraryDiscoveryInterface $library_discovery
+   *   The library discovery service to use for retrieving information about
+   *   the CKeditor library.
    */
   public function __construct(ConfigFactoryInterface $config_factory, ModuleHandler $module_handler, UrlGeneratorInterface $url_generator, LibraryDiscoveryInterface $library_discovery) {
     parent::__construct($config_factory);
@@ -112,8 +115,10 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
 
     if ($this->moduleHandler->moduleExists('help')) {
       $form['embed_provider']['#description'] .= $this->t('Check out the <a href=":help">help</a> page for more information.<br />',
-        [':help' => $this->urlGenerator->generateFromRoute('help.page', ['name' => 'ckeditor_media_embed'])
-      ]);
+        [
+          ':help' => $this->urlGenerator->generateFromRoute('help.page', ['name' => 'ckeditor_media_embed']),
+        ]
+      );
     }
 
     return parent::buildForm($form, $form_state);
