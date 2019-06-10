@@ -75,8 +75,17 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
 function ckeditor_media_embed_ckeditor_plugin_info_alter(array &$plugins) {
   $version = AssetManager::getPluginsVersion(\Drupal::service('library.discovery'), \Drupal::service('config.factory'));
   $plugin_statuses = AssetManager::getPluginsInstallStatuses($version);
+
+  $all_installed = array_reduce($plugin_statuses, function($acc, $plugin_status) {
+    if ($acc && $plugin_status == FALSE) {
+      $acc = $plugin_status;
+    }
+
+    return $acc;
+  }, TRUE);
+
   foreach ($plugin_statuses as $plugin_name => $is_installed) {
-    if (!$is_installed && !empty($plugins[$plugin_name])) {
+    if (!$all_installed && !empty($plugins[$plugin_name])) {
       unset($plugins[$plugin_name]);
     }
   }
