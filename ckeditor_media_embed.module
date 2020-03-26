@@ -132,7 +132,7 @@ function _ckeditor_media_embed_get_install_instructions($prefix = TRUE, $update 
 }
 
 /**
- * Implements hook_ckeditor_media_embed_dom_element_alter().
+ * Implements hook_ckeditor_media_embed_object_alter().
  */
 function ckeditor_media_embed_ckeditor_media_embed_object_alter(&$embed) {
   $title_exists = (
