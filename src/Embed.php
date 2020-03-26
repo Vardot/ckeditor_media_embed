@@ -133,6 +133,8 @@ class Embed implements EmbedInterface {
       watchdog_exception('ckeditor_media_embed', $e);
     }
 
+    $this->moduleHandler->alter('ckeditor_media_embed_object', $embed);
+
     return $embed;
   }
 
@@ -197,7 +199,6 @@ class Embed implements EmbedInterface {
     $embed_body_node = HTML::load(trim($embed->html))->getElementsByTagName('body')->item(0);
     foreach ($embed_body_node->childNodes as $child) {
       if ($child = $node->ownerDocument->importNode($child, TRUE)) {
-        $this->moduleHandler->alter('ckeditor_media_embed_dom_element', $child, $embed);
         $embed_node->appendChild($child);
       }
     }

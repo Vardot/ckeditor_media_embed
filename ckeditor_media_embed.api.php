@@ -11,27 +11,24 @@
  */
 
 /**
- * Alter the HTML of a DOM Element to be embedded.
- *
- * @param \DOMElement $child
- *   The DOM Element to be embedded.
+ * Alter the HTML of an embed object.
  *
  * @param object $embed
  *   The embed json decoded object as provided by Embed::getEmbedObject().
  */
-function hook_ckeditor_media_embed_dom_element_alter(\DOMElement $child, $embed) {
-  if (!empty($embed->title) && $title = \Drupal\Component\Utility\Html::escape($embed->title)) {
+function ckeditor_media_embed_ckeditor_media_embed_object_alter(&$embed) {
+  $title_exists = (
+    !empty($embed->title)
+    && $title = Html::escape($embed->title)
+  );
 
-    $child_is_iframe = ($child->tagName === 'iframe');
-    if ($child_is_iframe) {
-      $child->setAttribute('title', $title);
-    }
-    else {
-      $iframes = $child->getElementsByTagName('iframe');
-      $child_has_iframe = (!empty($iframes) && $iframes[0]);
-      if ($child_has_iframe) {
-        $iframes[0]->setAttribute('title', $title);
+  if ($title_exists && $document = Html::load(trim($embed->html))) {
+    if ($iframes = $document->getElementsByTagName('iframe')) {
+      foreach ($iframes as $iframe) {
+        $iframe->setAttribute('title', $title);
       }
+
+      $embed->html = Html::serialize($document);
     }
   }
 }
