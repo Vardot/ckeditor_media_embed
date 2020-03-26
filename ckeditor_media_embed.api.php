@@ -5,6 +5,8 @@
  * Hooks provided by the CKEditor Media Embed Plugin module.
  */
 
+use Drupal\Component\Utility\Html;
+
 /**
  * @addtogroup hooks
  * @{
