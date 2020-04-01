@@ -29,8 +29,7 @@ Install CKEditor plugins
 
   * Harder
 
-    1. Download the [Full "dev" package for CKEditor](https://github.com/ckeditor/ckeditor-dev/archive/
-        latest. zip).
+    1. Download the [Full "dev" package for CKEditor](https://github.com/ckeditor/ckeditor-dev/archive/latest. zip).
     2. Unzip the package and place its contents into
       `DRUPAL_ROOT/libraries/ckeditor`.
     3. Clear the cache
@@ -48,7 +47,8 @@ Install CKEditor plugins
       * [Notification Aggregator](http://ckeditor.com/addon/notificationaggregator)
       * [Text Match](https://ckeditor.com/cke4/addon/textmatch) (As of CKEditor 4.11)
 
-    2. Unzip and place the contents for each plugin in the the following directory:
+    2. Unzip and place the contents for each plugin in the the following
+       directory:
 
       * `DRUPAL_ROOT/libraries/ckeditor/plugins/PLUGIN_NAME`
 
@@ -70,8 +70,8 @@ Install and enable [CKEditor media embed](https://www.drupal.org/project/ckedito
   * WYSIWYG
 
     - Go to the 'Text formats and editors' configuration page:
-      `/admin/config/content/formats`, and for each text format/editor combo where
-      you want to embed URLs, do the following:
+      `/admin/config/content/formats`, and for each text format/editor combo
+      where you want to embed URLs, do the following:
     - Drag and drop the 'Media Embed' or the 'Semantic Media Embed' button into
       the Active toolbar.
     - If the text format uses the
@@ -81,14 +81,18 @@ Install and enable [CKEditor media embed](https://www.drupal.org/project/ckedito
 
   * Semantic Media Embed
 
-    If you are using the 'Semantic Media Embed' button be sure to do the following:
+    If you are using the 'Semantic Media Embed' button be sure to do the
+    following:
     - Enable the 'Convert Oembed tags to media embeds' filter.
-    - If the text format uses the 'Limit allowed HTML tags and correct faulty HTML' filter, add ```<oembed>``` to the 'Allowed HTML tags' field. (This should happen automatically however, in some cases it does not. See https://www.drupal.org/node/2689083.)
+    - If the text format uses the 'Limit allowed HTML tags and correct faulty
+      HTML' filter, add ```<oembed>``` to the 'Allowed HTML tags' field.
+      (This should happen automatically however, in some cases it does not.
+      See https://www.drupal.org/node/2689083.)
 
   * Field formatter
 
-    The field formatter allows link fields to be rendered via the configured oembed
-    service provider.
+    The field formatter allows link fields to be rendered via the configured
+    oembed service provider.
 
     - Navigate to "Manage display" for the content type, after adding a "Link"
       field.

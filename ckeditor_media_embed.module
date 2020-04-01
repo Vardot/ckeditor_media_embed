@@ -5,6 +5,7 @@
  * Module file for the CKEditor Media Embed plugin module.
  */
 
+use Drupal\Component\Utility\Html;
 use Drupal\ckeditor_media_embed\AssetManager;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
