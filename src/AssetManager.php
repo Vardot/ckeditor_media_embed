@@ -18,12 +18,27 @@ class AssetManager {
    * @var string
    */
   private static $libraryVersion = '4.5.x';
+
+  /**
+   * Drupal\ckeditor_media_embed\packageName definition.
+   *
+   * @var string
+   */
+  private static $packageName= '@ckeditor/ckeditor5-media-embed';
+
   /**
    * Drupal\ckeditor_media_embed\packagePrefix definition.
    *
    * @var string
    */
-  private static $packagePrefix = 'ckeditor4';
+  private static $packagePrefix = 'ckeditor5-media-embed';
+
+  /**
+   * Drupal\ckeditor_media_embed\ckeditorName definition.
+   *
+   * @var string
+   */
+  private static $ckeditorName = 'ckeditor5';
 
   /**
    * Retrieve a list of all plugins to install.
@@ -37,21 +52,8 @@ class AssetManager {
     }
 
     $plugins = [
-      'autoembed',
-      'autolink',
-      'embed',
-      'embedbase',
-      'embedsemantic',
-      'notification',
-      'notificationaggregator',
-      'link',
-      'fakeobjects',
+      'media-embed',
     ];
-
-    // Text match was added as a new dependency of autolink as of 4.11.
-    if (version_compare($version, '4.11', '>=')) {
-      $plugins[] = 'textmatch';
-    }
 
     return $plugins;
   }
@@ -102,7 +104,7 @@ class AssetManager {
     $is_installed = FALSE;
 
     $library_plugin_path = self::getCKEditorLibraryPluginDirectory() . $plugin_name;
-    if (is_dir($library_plugin_path) && is_file($library_plugin_path . '/plugin.js')) {
+    if (is_dir($library_plugin_path) && is_file($library_plugin_path . '/build/' . $plugin_name . '.js')) {
       $is_installed = TRUE;
     }
 
@@ -201,10 +203,10 @@ class AssetManager {
       try {
         $libraries = Yaml::decode(file_get_contents($library_file));
 
-        if (!empty($libraries['ckeditor']['version'])) {
-          $version = $libraries['ckeditor']['version'];
+        if (!empty($libraries[self::$ckeditorName]['version'])) {
+          $version = $libraries[self::$ckeditorName]['version'];
 
-          $version_extra_position = strpos($libraries['ckeditor']['version'], '+');
+          $version_extra_position = strpos($libraries[self::$ckeditorName]['version'], '+');
           if ($version_extra_position > 0) {
             $version = substr($version, 0, $version_extra_position);
           }
@@ -227,7 +229,7 @@ class AssetManager {
    */
   // @codingStandardsIgnoreLine
   public static function getCKEditorLibraryPluginPath() {
-    return 'libraries/ckeditor/plugins/';
+    return base_path() . 'libraries/' . self::$ckeditorName . '/plugins/';
   }
 
   /**
@@ -241,21 +243,21 @@ class AssetManager {
    */
   // @codingStandardsIgnoreLine
   public static function getCKEditorLibraryPluginDirectory() {
-    return \Drupal::root() . '/libraries/ckeditor/plugins/';
+    return \Drupal::root() . '/libraries/' . self::$ckeditorName . '/plugins/';
   }
 
   /**
-   * Retrieve the URL of the source package to download.
+   * Retrieve the URL of the source package metadata.
    *
    * @param string $version
-   *   The version of the CKEditor source package to download.
+   *   The version of the CKEditor source package.
    *
    * @return string
-   *   The absolute URL to the source package downloadable archive.
+   *   The absolute URL to the source package metadata.
    */
   // @codingStandardsIgnoreLine
-  public static function getCKEditorDevFullPackageUrl($version) {
-    return 'https://github.com/ckeditor/' . self::$packagePrefix . '/archive/' . $version . '.zip';
+  public static function getNPMRegistryPackageUrl($version) {
+    return 'https://registry.npmjs.org/' . self::$packageName . '/' . $version;
   }
 
   /**
