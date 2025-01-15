@@ -17,6 +17,7 @@ namespace Drupal\Tests\ckeditor_media_embed\Unit {
      * {@inheritdoc}
      */
     public function setUp(): void {
+      parent::setUp();
       $container = new ContainerBuilder();
       $container->setParameter('app.root', __DIR__ . '/../../assets');
       \Drupal::setContainer($container);

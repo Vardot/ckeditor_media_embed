@@ -16,6 +16,8 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\TransferException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Utility\Error;
+use Psr\Log\LoggerInterface;
 
 /**
  * The default CKEditor Media Embed class.
@@ -81,6 +83,13 @@ class Embed implements EmbedInterface {
   protected $embedProvider;
 
   /**
+   * A logger instance.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $logger;
+
+  /**
    * Constructs an Embed object.
    *
    * @param \GuzzleHttp\ClientInterface $http_client
@@ -97,8 +106,10 @@ class Embed implements EmbedInterface {
    *   The current path service.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   A logger instance.
    */
-  public function __construct(ClientInterface $http_client, UnroutedUrlAssemblerInterface $url_assembler, RequestStack $request_stack, MessengerInterface $messenger, ConfigFactory $config_factory, CurrentPathStack $current_path, ModuleHandlerInterface $module_handler) {
+  public function __construct(ClientInterface $http_client, UnroutedUrlAssemblerInterface $url_assembler, RequestStack $request_stack, MessengerInterface $messenger, ConfigFactory $config_factory, CurrentPathStack $current_path, ModuleHandlerInterface $module_handler, LoggerInterface $logger) {
     $this->httpClient = $http_client;
     $this->urlAssembler = $url_assembler;
     $this->requestStack = $request_stack;
@@ -106,6 +117,7 @@ class Embed implements EmbedInterface {
     $this->messenger = $messenger;
     $this->currentPath = $current_path;
     $this->moduleHandler = $module_handler;
+    $this->logger = $logger;
 
     $embed_provider = $this->configFactory->get('ckeditor_media_embed.settings')->get('embed_provider');
     $this->setEmbedProvider($embed_provider);
@@ -137,7 +149,7 @@ class Embed implements EmbedInterface {
     }
     catch (TransferException $e) {
       $this->messenger->addWarning($this->t('Unable to retrieve @url at this time, please check again later.', ['@url' => $url]));
-      watchdog_exception('ckeditor_media_embed', $e);
+      Error::logException($this->logger('ckeditor_media_embed'), $e);
     }
 
     $this->moduleHandler->alter('ckeditor_media_embed_object', $embed);
