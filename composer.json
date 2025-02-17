@@ -1,12 +1,21 @@
 {
-    "name": "drupal/ckeditor_media_embed",
+    "name": "vardot/ckeditor_media_embed",
     "description": "Adds the Media Embed CKEditor plugins to Drupal.",
     "type": "drupal-module",
-    "homepage": "https://www.drupal.org/project/embed",
-    "license": "GPL-2.0+",
+    "homepage": "https://www.drupal.org/project/ckeditor_media_embed",
+    "license": "GPL-2.0-or-later",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "authors": [
+      {
+        "name": "Vardot",
+        "homepage": "https://www.drupal.org/vardot",
+        "role": "Maintainer"
+      }
+    ],
     "support": {
-        "issues": "https://drupal.org/project/issues/ckeditor_media_embed",
-        "source": "https://drupal.org/project/ckeditor_media_embed"
+      "issues": "https://github.com/Vardot/ckeditor_media_embed/issues",
+      "source": "https://github.com/Vardot/ckeditor_media_embed"
     },
     "require": {},
     "extra": {
