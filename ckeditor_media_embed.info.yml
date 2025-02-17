@@ -8,6 +8,6 @@ dependencies:
   - drupal:ckeditor5
 
 # Information added by Vardot on 2025-02-17
-version: 2.1.1
+version: 2.1.x-dev
 project: 'ckeditor_media_embed'
-datestamp: 1739806206
+datestamp: ckeditor_media_embed
