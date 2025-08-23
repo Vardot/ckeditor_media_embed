@@ -114,6 +114,7 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
     $form['embed_provider'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Provider URL'),
+      '#size' => 128,
       '#default_value' => $config->get('embed_provider'),
       '#description' => $this->t('A template for the URL of the provider endpoint.
         This URL will be queried for each resource to be embedded. By default CKEditor uses the Iframely service.<br />
