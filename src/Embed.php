@@ -109,7 +109,16 @@ class Embed implements EmbedInterface {
    * @param \Psr\Log\LoggerInterface $logger
    *   A logger instance.
    */
-  public function __construct(ClientInterface $http_client, UnroutedUrlAssemblerInterface $url_assembler, RequestStack $request_stack, MessengerInterface $messenger, ConfigFactory $config_factory, CurrentPathStack $current_path, ModuleHandlerInterface $module_handler, LoggerInterface $logger) {
+  public function __construct(
+    ClientInterface $http_client,
+    UnroutedUrlAssemblerInterface $url_assembler,
+    RequestStack $request_stack,
+    MessengerInterface $messenger,
+    ConfigFactory $config_factory,
+    CurrentPathStack $current_path,
+    ModuleHandlerInterface $module_handler,
+    LoggerInterface $logger
+  ) {
     $this->httpClient = $http_client;
     $this->urlAssembler = $url_assembler;
     $this->requestStack = $request_stack;
