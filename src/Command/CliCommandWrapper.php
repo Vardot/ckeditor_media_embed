@@ -4,7 +4,7 @@ namespace Drupal\ckeditor_media_embed\Command;
 
 use Drupal\ckeditor_media_embed\AssetManager;
 use Drupal\Core\Archiver\Tar;
-use Drupal\Core\Asset\LibraryDiscovery;
+use Drupal\Core\Asset\LibraryDiscoveryInterface;
 use Drupal\Core\Config\ConfigFactory;
 use GuzzleHttp\Client;
 use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
@@ -25,7 +25,7 @@ class CliCommandWrapper {
   /**
    * The library discovery service.
    *
-   * @var \Drupal\Core\Asset\LibraryDiscovery
+   * @var \Drupal\Core\Asset\LibraryDiscoveryInterface
    */
   protected $libraryDiscovery;
 
@@ -59,14 +59,14 @@ class CliCommandWrapper {
   /**
    * Constructs CLI commands object.
    *
-   * @param \Drupal\Core\Asset\LibraryDiscovery $libraryDiscovery
+   * @param \Drupal\Core\Asset\LibraryDiscoveryInterface $libraryDiscovery
    *   The library discover service.
    * @param \GuzzleHttp\Client $httpClient
    *   The http client.
    * @param \Drupal\Core\Config\ConfigFactory $configFactory
    *   The config factory service.
    */
-  public function __construct(LibraryDiscovery $libraryDiscovery, Client $httpClient, ConfigFactory $configFactory) {
+  public function __construct(LibraryDiscoveryInterface $libraryDiscovery, Client $httpClient, ConfigFactory $configFactory) {
     $this->libraryDiscovery = $libraryDiscovery;
     $this->httpClient = $httpClient;
     $this->configFactory = $configFactory;

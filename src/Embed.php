@@ -158,7 +158,7 @@ class Embed implements EmbedInterface {
     }
     catch (TransferException $e) {
       $this->messenger->addWarning($this->t('Unable to retrieve @url at this time, please check again later.', ['@url' => $url]));
-      Error::logException($this->logger('ckeditor_media_embed'), $e);
+      Error::logException($this->logger, $e);
     }
 
     $this->moduleHandler->alter('ckeditor_media_embed_object', $embed);
