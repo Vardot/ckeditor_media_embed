@@ -7,7 +7,7 @@ use Drupal\ckeditor_media_embed\AssetManager;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Asset\LibraryDiscoveryInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Extension\ModuleHandler;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\UrlGeneratorInterface;
@@ -23,7 +23,7 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
 
   /**
    * The typed interface handler.
-   * 
+   *
    * @var Drupal\Core\Config\TypedConfigManagerInterface;
    */
   protected $typed_config_manager;
@@ -31,7 +31,7 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
   /**
    * The module handler.
    *
-   * @var \Drupal\Core\Extension\ModuleHandler
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
 
@@ -56,7 +56,7 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
    *   The factory for configuration objects.
    * @param \Drupal\Core\Config\TypedConfigManagerInterface $typed_config_manager
    *   The typed config manager.
-   * @param \Drupal\Core\Extension\ModuleHandler $module_handler
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
    * @param \Drupal\Core\Routing\UrlGeneratorInterface $url_generator
    *   The URL generator.
@@ -64,7 +64,7 @@ class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
    *   The library discovery service to use for retrieving information about
    *   the CKeditor library.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typed_config_manager, ModuleHandler $module_handler, UrlGeneratorInterface $url_generator, LibraryDiscoveryInterface $library_discovery) {
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typed_config_manager, ModuleHandlerInterface $module_handler, UrlGeneratorInterface $url_generator, LibraryDiscoveryInterface $library_discovery) {
     parent::__construct($config_factory, $typed_config_manager);
 
     $this->urlGenerator = $url_generator;
