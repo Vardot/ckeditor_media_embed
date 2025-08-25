@@ -229,7 +229,8 @@ class AssetManager {
    */
   // @codingStandardsIgnoreLine
   public static function getCKEditorLibraryPluginPath() {
-    return base_path() . 'libraries/' . self::$ckeditorName . '/plugins/';
+    $origin_url = \Drupal::request()->getSchemeAndHttpHost() . \Drupal::request()->getBaseUrl();
+    return $origin_url . '/libraries/' . self::$ckeditorName . '/plugins/';
   }
 
   /**
