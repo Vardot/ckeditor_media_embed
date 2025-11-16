@@ -8,7 +8,9 @@
         "issues": "https://drupal.org/project/issues/ckeditor_media_embed",
         "source": "https://drupal.org/project/ckeditor_media_embed"
     },
-    "require": {},
+    "require": {
+        "drupal/core": "^10.3 || ^11"
+    },
     "extra": {
         "drush": {
             "services": {
