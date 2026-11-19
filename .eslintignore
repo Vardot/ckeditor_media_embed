@@ -1,0 +1,5 @@
+node_modules/
+# The webship-js suite is Node code, linted by the 'eslint (step definitions)' job.
+tests/
+cucumber.js
+cucumber.shared.js

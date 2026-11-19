@@ -1,0 +1,40 @@
+name: 'CKEditor Media Embed test fixtures'
+description: 'Fixtures for the CKEditor Media Embed webship-js suite on a standard Drupal site: the Article content type with its Body on the Full HTML format, the Media Embed button in the Full HTML toolbar, the "Convert Oembed tags to media embeds" filter on Full HTML, and a Content editor role that may write articles in Full HTML.'
+type: Testing
+# Article, Full HTML with CKEditor 5 and the editor role, on any starting
+# profile: the Standard profile of Drupal 11.4 creates no content type.
+recipes:
+  - core/recipes/article_content_type
+  - core/recipes/full_html_format_editor
+  - core/recipes/content_editor_role
+install:
+  - ckeditor_media_embed
+config:
+  # Some of this config already exists on a standard site.
+  strict: false
+  actions:
+    # Body offers Full HTML only, so the form shows no format switch and the
+    # editor always carries the Media Embed button.
+    field.field.node.article.body:
+      setSettings:
+        allowed_formats:
+          - full_html
+    # What the README asks a site builder to do on a text format: drag the
+    # Media Embed button into the toolbar and enable the filter.
+    editor.editor.full_html:
+      addItemToToolbar:
+        item_name: MediaEmbed
+    filter.format.full_html:
+      setFilterConfig:
+        instance_id: filter_ckeditor_media_embed
+        configuration:
+          id: filter_ckeditor_media_embed
+          provider: ckeditor_media_embed
+          status: true
+          weight: 5
+          settings: {  }
+    user.role.content_editor:
+      grantPermissions:
+        - 'create article content'
+        - 'edit own article content'
+        - 'use text format full_html'

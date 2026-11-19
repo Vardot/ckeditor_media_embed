@@ -1,9 +1,9 @@
-ckeditor:
-  remote: https://github.com/ckeditor/ckeditor-dev
+ckeditor5:
+  remote: https://github.com/ckeditor/ckeditor5
   version: "x.x.x"
   license:
-    name: GNU-GPL-2.0-or-later
-    url: https://github.com/ckeditor/ckeditor-dev/blob/4.6.2/LICENSE.md
+    name: GPL-2.0-or-later
+    url: https://github.com/ckeditor/ckeditor5/blob/v47.6.2/LICENSE.md
     gpl-compatible: true
   js:
-    assets/vendor/ckeditor/ckeditor.js: { preprocess: false, minified: true }
+    assets/vendor/ckeditor5/ckeditor5-dll/ckeditor5-dll.js: { preprocess: false, minified: true }

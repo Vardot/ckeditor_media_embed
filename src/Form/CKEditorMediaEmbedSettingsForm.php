@@ -22,13 +22,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class CKEditorMediaEmbedSettingsForm extends ConfigFormBase {
 
   /**
-   * The typed interface handler.
-   *
-   * @var Drupal\Core\Config\TypedConfigManagerInterface;
-   */
-  protected $typed_config_manager;
-
-  /**
    * The module handler.
    *
    * @var \Drupal\Core\Extension\ModuleHandlerInterface

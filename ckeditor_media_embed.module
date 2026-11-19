@@ -28,14 +28,20 @@ function ckeditor_media_embed_help($route_name, RouteMatchInterface $route_match
       $output .= '<h3>' . t('Uses') . '</h3>';
       $output .= '<dl>';
       $output .= '<dt>' . t('Embed media resources') . '</dt>';
-      $output .= '<dd>' . t('During content creation the author may add embed resources (videos, images, tweets, etc.) hosted by other services (called the "content providers") in content via CKEditor. By default the plugin uses the <a href=":iframely" target="_blank">Iframely</a> proxy service which supports over <a href=":providers" target="blank">1715 content providers</a> such as Youtube, Vimeo, Twitter, Insagram, Imgur, GitHub, and Google Maps.', [':iframely' => 'https://iframely.com/', ':providers' => 'https://iframely.com/domains']) . '</dd>';
+      $output .= '<dd>' . t('During content creation the author may add embed resources (videos, images, tweets, etc.) hosted by other services (called the "content providers") in content via CKEditor. By default the plugin uses the <a href=":iframely" target="_blank">Iframely</a> proxy service which supports over <a href=":providers" target="blank">1715 content providers</a> such as Youtube, Vimeo, Twitter, Instagram, Imgur, GitHub, and Google Maps.', [
+        ':iframely' => 'https://iframely.com/',
+        ':providers' => 'https://iframely.com/domains',
+      ]) . '</dd>';
       $output .= '</dl>';
       $output .= '<dl>';
       $output .= '<dt>' . t('Media resource field') . '</dt>';
       $output .= '<dd>' . t('Provides a link field formatter that will render the link using the configured oembed media provider.') . '</dd>';
       $output .= '</dl>';
       $output .= '<h3>' . t('Provider') . '</h3>';
-      $output .= '<p>' . t('Only a single provider may be configured at a time, however, it is recommended to use a proxy service like <a href=":iframely" target="_blank">Iframely</a> or <a href=":noembed" target="_blank">Noembed</a> so that many different media providers can be supported. You may also use a specific media provider so the embeds are limited to the embed types it supports.', [':iframely' => 'https://iframely.com/', ':noembed' => 'https://noembed.com/']) . '</p>';
+      $output .= '<p>' . t('Only a single provider may be configured at a time, however, it is recommended to use a proxy service like <a href=":iframely" target="_blank">Iframely</a> or <a href=":noembed" target="_blank">Noembed</a> so that many different media providers can be supported. You may also use a specific media provider so the embeds are limited to the embed types it supports.', [
+        ':iframely' => 'https://iframely.com/',
+        ':noembed' => 'https://noembed.com/',
+      ]) . '</p>';
       $output .= '<dl>';
       $output .= '<dt>' . t('Provider URL') . '</dt>';
       $output .= '<dd>' . t('The service provider is configured on the @settings_link.', ['@settings_link' => \Drupal::service('ckeditor_media_embed')->getSettingsLink()]) . '</dd>';
@@ -96,6 +102,9 @@ function ckeditor_media_embed_ckeditor_plugin_info_alter(array &$plugins) {
   }
 }
 
+/**
+ * Implements hook_library_info_build().
+ */
 function ckeditor_media_embed_library_info_build() {
   $libraryDiscovery = \Drupal::service('library.discovery');
   $configFactory = \Drupal::configFactory();
@@ -105,23 +114,23 @@ function ckeditor_media_embed_library_info_build() {
   foreach (AssetManager::getPlugins($packageVersion) as $plugin) {
     $libraries[$plugin] = [
       'dependencies' => [
-        'ckeditor5/ckeditor5'
+        'ckeditor5/ckeditor5',
       ],
       'js' => [
         AssetManager::getCKEditorLibraryPluginPath() . $plugin . '/build/' . $plugin . '.js' => [
           'preprocess' => FALSE,
-          'minified' => TRUE
-        ]
-      ]
+          'minified' => TRUE,
+        ],
+      ],
     ];
   }
 
   $libraries['ckeditor_media_embed.admin'] = [
     'css' => [
       'theme' => [
-        'css/ckeditor_media_embed.admin.css' => []
-      ]
-    ]
+        'css/ckeditor_media_embed.admin.css' => [],
+      ],
+    ],
   ];
 
   return $libraries;
@@ -148,7 +157,10 @@ function _ckeditor_media_embed_get_install_instructions($prefix = TRUE, $update 
     [
       ':op' => $update ? 'update' : 'install',
       ':drush' => Url::fromUri('https://drush.org/', ['absolute' => TRUE])->toString(),
-      ':project_page' => Url::fromUri('https://www.drupal.org/project/ckeditor_media_embed', ['absolute' => TRUE, 'fragment' => 'ckeditor-media-embed--install'])->toString(),
+      ':project_page' => Url::fromUri('https://www.drupal.org/project/ckeditor_media_embed', [
+        'absolute' => TRUE,
+        'fragment' => 'ckeditor-media-embed--install',
+      ])->toString(),
       '@prefix' => $message_prefix,
     ]
   ));

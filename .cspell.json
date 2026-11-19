@@ -1,0 +1,39 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "ignorePaths": [
+    "node_modules/**",
+    "vendor/**",
+    "tests/reports/**",
+    "tests/screenshots/**",
+    "tests/videos/**",
+    "tests/fixtures/**",
+    "*.min.js",
+    "package.json",
+    "package-lock.json",
+    "yarn.lock"
+  ],
+  "words": [
+    "APITOKEN",
+    "CAROOT",
+    "drupalcode",
+    "drush",
+    "grndlvl",
+    "Iframely",
+    "infobars",
+    "Laigle",
+    "licence",
+    "MYAPITOKEN",
+    "noembed",
+    "Oembed",
+    "oembed",
+    "plugincollection",
+    "runserver",
+    "Vardot",
+    "webship",
+    "ytimg"
+  ],
+  "ignoreRegExpList": [
+    "/[A-Za-z0-9+/]{40,}={0,2}/"
+  ]
+}

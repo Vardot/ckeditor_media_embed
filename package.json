@@ -1,0 +1,36 @@
+{
+  "name": "ckeditor_media_embed",
+  "description": "webship-js (Playwright + Cucumber) BDD suite for the CKEditor Media Embed Drupal module, with the webship-js Drupal core steps.",
+  "license": "GPL-2.0",
+  "private": true,
+  "author": "Vardot",
+  "engines": {
+    "yarn": ">= 4.18.1",
+    "node": ">= 24.0"
+  },
+  "packageManager": "yarn@4.18.1",
+  "scripts": {
+    "test": "node ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js",
+    "test:chromium": "BROWSER=chromium node ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js",
+    "test:firefox": "BROWSER=firefox node ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js",
+    "test:webkit": "BROWSER=webkit node ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js",
+    "test:headed": "HEADLESS=false node ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js",
+    "lint:js": "node ./node_modules/eslint/bin/eslint.js --no-ignore tests/step-definitions",
+    "generate-reports": "generate-reports"
+  },
+  "keywords": [
+    "drupal",
+    "drupal-module",
+    "ckeditor5",
+    "media-embed",
+    "oembed"
+  ],
+  "dependencies": {
+    "@webship-js/drupal-core-steps": "^2.2.2",
+    "webship-js": "^2.0.10"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^8.0.0"
+  }
+}

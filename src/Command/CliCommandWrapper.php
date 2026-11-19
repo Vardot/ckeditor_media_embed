@@ -147,7 +147,7 @@ class CliCommandWrapper {
 
     $package_name = AssetManager::getCKEditorDevFullPackageName($this->packageVersion);
     $package_metadata_url = AssetManager::getNPMRegistryPackageUrl($this->packageVersion);
-    $package_url = $this->getNPMRegistryDistUrl($package_metadata_url);
+    $package_url = $this->getNpmRegistryDistUrl($package_metadata_url);
     $package_directory = sys_get_temp_dir() . '/' . $package_name;
     $package_archive = sys_get_temp_dir() . "/$package_name.tgz";
 
@@ -209,7 +209,7 @@ class CliCommandWrapper {
    * @return string
    *   The absolute URL to the downloadable archive.
    */
-  protected function getNPMRegistryDistUrl($url) {
+  protected function getNpmRegistryDistUrl($url) {
     $response = $this->httpClient->get($url);
     $parsed = json_decode($response->getBody());
 

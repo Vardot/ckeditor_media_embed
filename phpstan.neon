@@ -1,0 +1,26 @@
+# The gitlab_templates default (assets/phpstan.neon), plus what this module
+# needs.
+parameters:
+  level: 0
+  fileExtensions:
+    - php
+    - module
+    - inc
+    - install
+    - theme
+    - profile
+  reportUnmatchedIgnoredErrors: false
+  excludePaths:
+    # The CKEditor 4 plugin base class implements an interface of the
+    # ckeditor module, which this branch does not require (it requires
+    # ckeditor5), so it cannot be analysed. Nothing in the module uses it.
+    - src/CKEditorVersionAwarePluginBase.php
+  ignoreErrors:
+    # new static() is a best practice in Drupal, so we cannot fix that.
+    - "#^Unsafe usage of new static#"
+    # The Drush install command extracts the npm package with core's Tar
+    # archiver, deprecated in drupal:11.3.0 and removed from drupal:12.0.0.
+    # Replacing the download is the subject of #3620359.
+    -
+      message: "#Drupal\\\\Core\\\\Archiver\\\\Tar#"
+      path: src/Command/CliCommandWrapper.php

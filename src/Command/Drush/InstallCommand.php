@@ -5,7 +5,7 @@ namespace Drupal\ckeditor_media_embed\Command\Drush;
 use Drupal\ckeditor_media_embed\Command\CKEditorCliCommandInterface;
 use Drupal\ckeditor_media_embed\Command\CliCommandWrapper;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Serialization\Yaml;
+use Drupal\Component\Serialization\Yaml;
 use Drush\Style\DrushStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
