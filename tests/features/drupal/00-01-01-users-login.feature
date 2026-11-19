@@ -14,10 +14,20 @@ Feature: Login for every configured user
       And the page should not have PHP errors
      When I go to "/admin/people"
      Then I should see "content_editor_user"
+      And I should see "page_writer_user"
+      And I should see "text_format_admin_user"
+      And I should see "authenticated_user"
       And the page should not have PHP errors
 
-  Scenario: The Content editor can log in
-    Given I am a logged in user with the "Content editor" user
+  Scenario Outline: The <user> can log in
+    Given I am a logged in user with the "<user>" user
      When I go to "/user"
      Then the url should match "/user/\d+$"
       And the page should not have PHP errors
+
+    Examples:
+      | user                      |
+      | Content editor            |
+      | Page writer               |
+      | Text format administrator |
+      | Authenticated user        |

@@ -4,13 +4,13 @@ Feature: Embedding a media URL through the button
   I want to paste a YouTube link into the Media Embed form
   So that the saved page shows the video
 
-  # The provider is a JSON fixture the test site serves, answering like an
-  # oEmbed provider for a YouTube link; no third-party oEmbed service is
-  # called. YouTube itself is blocked so the editor preview and the rendered
-  # iframe do not wait on the network.
+  # The provider is the test module ckeditor_media_embed_test, which answers
+  # like an oEmbed provider from tests/fixtures/oembed; no third-party oEmbed
+  # service is called. YouTube itself is blocked so the editor preview and the
+  # rendered iframe do not wait on the network.
 
   Background:
-    Given the media embed provider is the "youtube" oEmbed fixture
+    Given the media embed provider is the local oEmbed fixture provider
       And the URL "**/www.youtube.com/**" is blocked
       And the URL "**/i.ytimg.com/**" is blocked
 

@@ -1,0 +1,6 @@
+name: 'CKEditor Media Embed test'
+type: module
+description: 'Answers oEmbed requests from local fixtures for the CKEditor Media Embed functional tests, so no third-party provider is called.'
+package: Testing
+hidden: true
+core_version_requirement: ^10.3 || ^11

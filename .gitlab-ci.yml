@@ -267,6 +267,12 @@ stylelint:
     - grep -A2 '^ckeditor5:' web/core/core.libraries.yml | grep version
     - !reference [.e2e-fragments, site]
     - !reference [.e2e-fragments, install]
+    # The fixtures recipe installs the hidden test module that answers oEmbed
+    # requests from tests/fixtures/oembed. After the install or its cache, so
+    # a cached settings.php gets it too.
+    - chmod u+w web/sites/default web/sites/default/settings.php
+    - grep -q "extension_discovery_scan_tests" web/sites/default/settings.php || echo "\$settings['extension_discovery_scan_tests'] = TRUE;" >> web/sites/default/settings.php
+    - $DRUSH_BIN --root=$_BUILD_DIR/web cache:rebuild
     - $DRUSH_BIN --root=$_BUILD_DIR/web recipe "$CI_PROJECT_DIR/tests/recipes/ckeditor_media_embed_test" -y
   script:
     # Login flood limits off for the robot.
@@ -330,9 +336,6 @@ stylelint:
     - chmod u+w web/sites/default && cp "$E2E_SITE/settings.php" web/sites/default/settings.php
     - $DRUSH_BIN --root=$_BUILD_DIR/web sql:query --file="$E2E_SITE/db.sql.gz"
     - $DRUSH_BIN --root=$_BUILD_DIR/web cache:rebuild
-    # The oEmbed fixtures, served by the site itself as the provider answer.
-    - mkdir -p web/sites/default/files/oembed-fixtures
-    - cp "$CI_PROJECT_DIR"/tests/fixtures/oembed/*.json web/sites/default/files/oembed-fixtures/
   script:
     - PHP_CLI_SERVER_WORKERS=8 $DRUSH_BIN --root=$_BUILD_DIR/web runserver 127.0.0.1:8888 > "$CI_PROJECT_DIR/runserver.log" 2>&1 &
     # A cold site can miss the first page load, so load the pages the suite
@@ -343,11 +346,11 @@ stylelint:
       warm /user/login
       warm /
       curl -sS -o /dev/null -L -b /tmp/warm.jar -c /tmp/warm.jar --max-time 300 "$($DRUSH_BIN --root=$_BUILD_DIR/web user:login --name=webmaster --uri=$LAUNCH_URL --no-browser)" || true
-      for path in /admin/people /admin/modules /admin/reports/status /admin/config/media/ckeditor-media-embed/settings /admin/config/content/formats/manage/full_html /node/add/article; do warm $path; done
+      for path in /admin/people /admin/modules /admin/reports/status /admin/config/media/ckeditor-media-embed/settings /admin/config/content/formats/manage/full_html /node/add/article /node/add/page; do warm $path; done
     - cd "$CI_PROJECT_DIR"
-    # Some steps run drush: the cache rebuild regression and the provider.
+    # Some steps run drush: the cache rebuild regression, the provider, the
+    # Drush commands, the plugin library and the configuration checks.
     - export CKEDITOR_MEDIA_EMBED_DRUSH="$DRUSH_BIN --root=$_BUILD_DIR/web"
-    - export CKEDITOR_MEDIA_EMBED_FIXTURES="/sites/default/files/oembed-fixtures"
     - FEATURES="$FEATURES_GLOB" yarn $SUITE_SCRIPT
   after_script:
     - cd "$CI_PROJECT_DIR"
@@ -359,14 +362,26 @@ stylelint:
         --pdf-out "tests/reports/$REPORT.pdf"
         --title "CKEditor Media Embed ($E2E_LANE, $SUITE)" || true
 
-# These groups run at the same time.
+# These groups run at the same time, each on its own copy of the site.
+# 15-16 changes the site (the plugin library, then an uninstall), so it runs
+# alone.
 .e2e-groups:
   parallel:
     matrix:
       - SUITE: "01-03-install-settings-format"
         FEATURES_GLOB: "tests/features/drupal/{01,02,03}-*.feature"
-      - SUITE: "04-06-editor-embed"
+      - SUITE: "04-06-editor-regression-embed"
         FEATURES_GLOB: "tests/features/drupal/{04,05,06}-*.feature"
+      - SUITE: "07-access-control"
+        FEATURES_GLOB: "tests/features/drupal/07-*.feature"
+      - SUITE: "08-09-providers-basic-html"
+        FEATURES_GLOB: "tests/features/drupal/{08,09}-*.feature"
+      - SUITE: "10-12-formatter-alignment-errors"
+        FEATURES_GLOB: "tests/features/drupal/{10,11,12}-*.feature"
+      - SUITE: "13-14-empty-url-drush"
+        FEATURES_GLOB: "tests/features/drupal/{13,14}-*.feature"
+      - SUITE: "15-16-missing-library-uninstall"
+        FEATURES_GLOB: "tests/features/drupal/{15,16}-*.feature"
 
 # The smoke canary: the login feature alone. Every group needs it, so a
 # systemic break fails once here instead of in every group.

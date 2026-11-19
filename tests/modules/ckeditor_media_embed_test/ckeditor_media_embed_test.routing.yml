@@ -1,0 +1,9 @@
+ckeditor_media_embed_test.oembed:
+  path: '/ckeditor-media-embed-test/oembed'
+  defaults:
+    _controller: '\Drupal\ckeditor_media_embed_test\Controller\OembedFixtureController::oembed'
+  requirements:
+    # The module asks the provider from the server, with no session.
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE

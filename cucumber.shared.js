@@ -24,6 +24,27 @@ module.exports = {
       password: 'dD.123123ddd',
       roles: ['content_editor'],
     },
+    // Writes articles and pages without Full HTML (the fixtures recipe).
+    'Page writer': {
+      username: 'page_writer_user',
+      email: 'page_writer_user@example.test',
+      password: 'dD.123123ddd',
+      roles: ['page_writer'],
+    },
+    // Administers the text formats and the provider settings only.
+    'Text format administrator': {
+      username: 'text_format_admin_user',
+      email: 'text_format_admin_user@example.test',
+      password: 'dD.123123ddd',
+      roles: ['text_format_admin'],
+    },
+    // Logged in, with no role at all.
+    'Authenticated user': {
+      username: 'authenticated_user',
+      email: 'authenticated_user@example.test',
+      password: 'dD.123123ddd',
+      roles: [],
+    },
   },
   minWaitTime: {
     page: 3000,

@@ -1,14 +1,21 @@
 name: 'CKEditor Media Embed test fixtures'
-description: 'Fixtures for the CKEditor Media Embed webship-js suite on a standard Drupal site: the Article content type with its Body on the Full HTML format, the Media Embed button in the Full HTML toolbar, the "Convert Oembed tags to media embeds" filter on Full HTML, and a Content editor role that may write articles in Full HTML.'
+description: 'Fixtures for the CKEditor Media Embed webship-js suite on a standard Drupal site: Article with its Body on Full HTML and a Video link field shown by the module''s link formatter, Basic page with its Body on Basic HTML, the Media Embed button and the "Convert Oembed tags to media embeds" filter on both formats, the roles the access scenarios log in with, and the test module that answers oEmbed requests from local fixtures.'
 type: Testing
-# Article, Full HTML with CKEditor 5 and the editor role, on any starting
-# profile: the Standard profile of Drupal 11.4 creates no content type.
+# Article, Basic page, Full HTML and Basic HTML with CKEditor 5, and the
+# editor role, on any starting profile: the Standard profile of Drupal 11.4
+# creates no content type.
 recipes:
   - core/recipes/article_content_type
+  - core/recipes/page_content_type
   - core/recipes/full_html_format_editor
+  - core/recipes/basic_html_format_editor
   - core/recipes/content_editor_role
 install:
+  - link
   - ckeditor_media_embed
+  # Answers oEmbed requests from tests/fixtures/oembed; it is hidden, so the
+  # site needs $settings['extension_discovery_scan_tests'] = TRUE.
+  - ckeditor_media_embed_test
 config:
   # Some of this config already exists on a standard site.
   strict: false
@@ -19,11 +26,22 @@ config:
       setSettings:
         allowed_formats:
           - full_html
+    # Basic page writes in Basic HTML, the restricted format most sites give
+    # their editors.
+    field.field.node.page.body:
+      setSettings:
+        allowed_formats:
+          - basic_html
     # What the README asks a site builder to do on a text format: drag the
-    # Media Embed button into the toolbar and enable the filter.
+    # Media Embed button into the toolbar and enable the filter. Text
+    # alignment is there for the alignment scenarios. Both go first: a toolbar
+    # wider than the editor moves its last buttons into "Show more items".
     editor.editor.full_html:
       addItemToToolbar:
-        item_name: MediaEmbed
+        - item_name: MediaEmbed
+          position: 0
+        - item_name: alignment
+          position: 1
     filter.format.full_html:
       setFilterConfig:
         instance_id: filter_ckeditor_media_embed
@@ -33,8 +51,81 @@ config:
           status: true
           weight: 5
           settings: {  }
+    # Basic HTML limits the HTML, so it must also allow what the button
+    # writes (<figure class> and <oembed url>), or CKEditor 5 refuses the
+    # button. The filter runs after "Limit allowed HTML", so the embed HTML it
+    # adds is not stripped.
+    filter.format.basic_html:
+      setFilterConfigs:
+        -
+          instance_id: filter_html
+          configuration:
+            id: filter_html
+            provider: filter
+            status: true
+            weight: -10
+            settings:
+              allowed_html: '<br> <p> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <cite> <dl> <dt> <dd> <a hreflang href> <blockquote cite> <ul type> <ol start type> <strong> <em> <code> <li> <img src alt data-entity-uuid data-entity-type height width data-caption data-align> <figure class> <oembed url>'
+              filter_html_help: false
+              filter_html_nofollow: false
+        -
+          instance_id: filter_ckeditor_media_embed
+          configuration:
+            id: filter_ckeditor_media_embed
+            provider: ckeditor_media_embed
+            status: true
+            weight: 5
+            settings: {  }
+    editor.editor.basic_html:
+      addItemToToolbar:
+        item_name: MediaEmbed
+    # The Video link field: a link widget, shown with the module's
+    # "Oembed element using CKEditor Media Embed provider" formatter.
+    core.entity_form_display.node.article.default:
+      setComponents:
+        -
+          name: field_video_link
+          options:
+            type: link_default
+            weight: 3
+            region: content
+            settings:
+              placeholder_url: ''
+              placeholder_title: ''
+            third_party_settings: {  }
+    core.entity_view_display.node.article.default:
+      setComponents:
+        -
+          name: field_video_link
+          options:
+            type: ckeditor_media_embed_link_formatter
+            label: above
+            weight: 3
+            region: content
+            settings: {  }
+            third_party_settings: {  }
     user.role.content_editor:
       grantPermissions:
         - 'create article content'
         - 'edit own article content'
+        - 'create page content'
+        - 'edit own page content'
         - 'use text format full_html'
+    # Writes articles and pages, but may not use Full HTML: the article Body
+    # is closed to it, the Basic page Body has the button.
+    user.role.page_writer:
+      createIfNotExists:
+        label: 'Page writer'
+      grantPermissions:
+        - 'access content overview'
+        - 'create article content'
+        - 'create page content'
+        - 'edit own page content'
+    # Administers the text formats and the provider settings, and writes
+    # nothing.
+    user.role.text_format_admin:
+      createIfNotExists:
+        label: 'Text format administrator'
+      grantPermissions:
+        - 'access administration pages'
+        - 'administer filters'
