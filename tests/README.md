@@ -56,3 +56,7 @@ plugin library, the fixtures recipe and the testing users), then runs a smoke
 canary and the feature groups in parallel against `drush runserver`. Every
 group publishes its HTML and PDF report, failure screenshots and videos as
 artifacts, and the report stage merges them into one report.
+
+These jobs run on merge requests, on the `*.x` branches and on tag pipelines,
+so every release tag carries its own merged report in the artifacts of its
+"Create reports" job.

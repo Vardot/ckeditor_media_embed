@@ -12,6 +12,9 @@
 #            group with webship-js.
 # report   - merge every group's cucumber JSON into one HTML and PDF report.
 #
+# The webship-js jobs run on merge requests, on the *.x branches and on tags,
+# so every release carries its own functional test report.
+#
 # One lane: Drupal core 11.4 (standard profile, @webship-js/drupal-core-steps).
 # The CKEditor 5 plugin library, vardot/ckeditor5-media-embed-drupal, must be
 # built against the CKEditor 5 that core bundles; ~47.6.2 matches 11.4.
@@ -67,6 +70,8 @@ stylelint:
       when: on_success
     - if: '$CI_COMMIT_REF_NAME =~ /^([0-9]+\.)?[0-9]+\.x$/'
       when: on_success
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
     - when: never
   script:
     - npm install --no-save eslint@8 eslint-config-prettier@8
@@ -120,6 +125,8 @@ stylelint:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: on_success
     - if: '$CI_COMMIT_REF_NAME =~ /^([0-9]+\.)?[0-9]+\.x$/'
+      when: on_success
+    - if: '$CI_COMMIT_TAG'
       when: on_success
     - when: never
 
@@ -400,6 +407,8 @@ stylelint:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
     - if: '$CI_COMMIT_REF_NAME =~ /^([0-9]+\.)?[0-9]+\.x$/'
+      when: always
+    - if: '$CI_COMMIT_TAG'
       when: always
     - when: never
   variables:
