@@ -5,9 +5,10 @@
  * Install file for the CKEditor Media Embed plugin module.
  */
 
+use Drupal\ckeditor5\HTMLRestrictions;
 use Drupal\ckeditor_media_embed\AssetManager;
-
 use Drupal\Core\Render\Markup;
+use Drupal\filter\Plugin\FilterInterface;
 
 /**
  * Implements hook_install().
@@ -17,6 +18,83 @@ function ckeditor_media_embed_install() {
 
   if (!AssetManager::pluginsAreInstalled($version)) {
     \Drupal::messenger()->addWarning(_ckeditor_media_embed_get_install_instructions());
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function ckeditor_media_embed_uninstall($is_syncing) {
+  // A configuration import brings the text editors and formats to the state
+  // it holds, so leave them alone.
+  if ($is_syncing) {
+    return;
+  }
+  _ckeditor_media_embed_remove_from_text_editors();
+}
+
+/**
+ * Removes the Media Embed button from every CKEditor 5 text editor.
+ *
+ * A text editor's configuration depends on the module of its editor plugin
+ * and on its text format, not on the modules that provide the CKEditor 5
+ * plugins in its toolbar. So nothing else removes the button when this module
+ * is uninstalled, and a text format that keeps it no longer saves: "The
+ * provided toolbar item MediaEmbed is not valid." This does what removing the
+ * button in the text format form does: it removes the toolbar items and the
+ * settings of the plugin and, from a text format that limits HTML, the
+ * elements only this plugin provided.
+ */
+function _ckeditor_media_embed_remove_from_text_editors() {
+  $plugin_id = 'ckeditor_media_embed_embed_media';
+  /** @var \Drupal\ckeditor5\Plugin\CKEditor5PluginManagerInterface $plugin_manager */
+  $plugin_manager = \Drupal::service('plugin.manager.ckeditor5.plugin');
+  if (!$plugin_manager->hasDefinition($plugin_id)) {
+    return;
+  }
+  $toolbar_items = array_keys($plugin_manager->getDefinition($plugin_id)->getToolbarItems());
+
+  /** @var \Drupal\editor\EditorInterface[] $editors */
+  $editors = \Drupal::entityTypeManager()->getStorage('editor')->loadByProperties(['editor' => 'ckeditor5']);
+  foreach ($editors as $editor) {
+    $settings = $editor->getSettings();
+    $items = $settings['toolbar']['items'] ?? [];
+    if (!array_intersect($items, $toolbar_items) && !isset($settings['plugins'][$plugin_id])) {
+      continue;
+    }
+
+    $plugin_elements = new HTMLRestrictions($plugin_manager->getProvidedElements([$plugin_id], $editor));
+    $settings['toolbar']['items'] = array_values(array_diff($items, $toolbar_items));
+    unset($settings['plugins'][$plugin_id]);
+    $editor->setSettings($settings);
+
+    // A text format that limits HTML allowed what the button wrote. Stop
+    // allowing the elements no remaining plugin provides.
+    $format = $editor->getFilterFormat();
+    if ($format) {
+      $enabled_plugins = array_keys($plugin_manager->getEnabledDefinitions($editor));
+      $still_provided = new HTMLRestrictions($plugin_manager->getProvidedElements($enabled_plugins, $editor));
+      $no_longer_provided = $plugin_elements->diff($still_provided);
+      $format_changed = FALSE;
+      foreach ($format->filters() as $filter_id => $filter) {
+        $configuration = $filter->getConfiguration();
+        if (empty($configuration['status']) || $filter->getType() !== FilterInterface::TYPE_HTML_RESTRICTOR || !isset($configuration['settings']['allowed_html'])) {
+          continue;
+        }
+        $allowed = HTMLRestrictions::fromString($configuration['settings']['allowed_html']);
+        $remaining = $allowed->diff($no_longer_provided);
+        if ($remaining->toFilterHtmlAllowedTagsString() !== $allowed->toFilterHtmlAllowedTagsString()) {
+          $configuration['settings']['allowed_html'] = $remaining->toFilterHtmlAllowedTagsString();
+          $format->setFilterConfig($filter_id, $configuration);
+          $format_changed = TRUE;
+        }
+      }
+      if ($format_changed) {
+        $format->save();
+      }
+    }
+
+    $editor->save();
   }
 }
 
