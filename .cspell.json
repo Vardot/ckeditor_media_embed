@@ -16,6 +16,7 @@
   "words": [
     "APITOKEN",
     "CAROOT",
+    "Dailymotion",
     "drupalcode",
     "drush",
     "grndlvl",
@@ -28,9 +29,13 @@
     "Oembed",
     "oembed",
     "plugincollection",
+    "pymdownx",
     "runserver",
+    "updatedb",
     "Vardot",
+    "venv",
     "webship",
+    "youtu",
     "ytimg"
   ],
   "ignoreRegExpList": [

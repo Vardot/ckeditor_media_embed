@@ -8,6 +8,7 @@ CONTENTS OF THIS FILE
  * Licensing
  * Configuration
  * Additional Plugins
+ * Documentation
  * Maintainers
 
 
@@ -110,6 +111,20 @@ Install and enable [CKEditor media embed](https://www.drupal.org/project/ckedito
       field.
     - Select the "Oembed element using CKEditor Media Embed provider" format for
       the link field you wish.
+
+
+DOCUMENTATION
+-------------
+
+Full documentation, built from `docs/`:
+https://project.pages.drupalcode.org/ckeditor_media_embed/
+
+  * For editors: installing, embedding media and the supported providers.
+  * For administrators: the provider, text formats, the plugin library and
+    upgrading.
+  * For developers: architecture, hooks and the root-relative plugin path.
+  * Testing: the webship-js suite, PHPUnit and the GitLab CI pipeline.
+  * FAQ.
 
 
 MAINTAINERS
