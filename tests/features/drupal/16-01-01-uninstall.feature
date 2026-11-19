@@ -40,12 +40,10 @@ Feature: Uninstalling the module leaves nothing behind
       And "script[src*='media-embed.js']" should have a count of 0
       And there should be no JavaScript errors
 
-  # @wip: the uninstall leaves the MediaEmbed toolbar item in the editor
-  # configuration of every text format that had the button, and saving such a
-  # format then fails with "The provided toolbar item MediaEmbed is not
-  # valid." (found by this suite, see #3620362). This scenario holds the clean
-  # uninstall; take @wip off once the module removes its toolbar item.
-  @wip
+  # Regression for #3620365: the uninstall used to leave the MediaEmbed toolbar
+  # item in the editor configuration of every text format that had the button,
+  # and saving such a format then failed with "The provided toolbar item
+  # MediaEmbed is not valid."
   Scenario: After the uninstall the text formats no longer list the Media Embed button, and still save
     Given I am a logged in user with the "Webmaster" user
      Then the "ckeditor_media_embed" module should not be installed

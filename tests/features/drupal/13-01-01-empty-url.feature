@@ -1,8 +1,7 @@
-# @wip while #3600610 is open: the filter sends the empty url to the
-# provider, which answers 400, and every render shows "Unable to retrieve
-# at this time, please check again later." This scenario holds the fixed
-# behavior; take @wip off with the fix.
-@ckeditor-media-embed @oembed-fixture @wip
+# Regression for #3600610: the filter used to send the empty url to the
+# provider, which answered 400, and every render showed "Unable to retrieve
+# at this time, please check again later."
+@ckeditor-media-embed @oembed-fixture
 Feature: An oEmbed with an empty url is left alone
   As a site owner
   I want an <oembed> element with an empty url to render without calling

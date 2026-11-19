@@ -37,10 +37,10 @@ module below.
 | `10-01-01-link-formatter` | Manage display offers the "Oembed element using CKEditor Media Embed provider" formatter; a video link renders as the provider's player; a link the provider cannot embed stays a plain link, with a warning |
 | `11-01-01-alignment` | with the embed selected the text alignment button is disabled, text next to it can still be aligned, and the embed is saved without alignment (#3394816, closed as working as designed) |
 | `12-01-01-provider-errors` | a link the provider has no answer for, and a provider that cannot be reached, keep the `<oembed>` and show "Unable to retrieve ... at this time" without breaking the page |
-| `13-01-01-empty-url` | `@wip` while #3600610 is open: an `<oembed>` with an empty url is not sent to the provider and shows no warning |
+| `13-01-01-empty-url` | an `<oembed>` with an empty url is not sent to the provider and shows no warning (#3600610) |
 | `14-01-01-drush-commands` | Drush lists `ckeditor_media_embed:install` and `ckeditor_media_embed:update`; both ask before overwriting the installed library, and "no" downloads and changes nothing |
 | `15-01-01-missing-library` | with the plugin library missing, the status report shows the error and the settings page shows the install instructions; both are whole again once it is back |
-| `16-01-01-uninstall` | the module cannot be uninstalled while its filter is in use; once the filter is off the formats, it uninstalls and leaves no settings, filter, formatter, plugin script, button or status report line behind. `@wip`: the MediaEmbed toolbar item stays in the editor configuration, and the format then refuses to save |
+| `16-01-01-uninstall` | the module cannot be uninstalled while its filter is in use; once the filter is off the formats, it uninstalls and leaves no settings, filter, formatter, plugin script, button or status report line behind. The MediaEmbed toolbar item leaves the editor configuration too, and the format still saves (#3620365) |
 
 ### The oEmbed provider
 
