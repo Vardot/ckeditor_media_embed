@@ -222,15 +222,20 @@ class AssetManager {
   }
 
   /**
-   * Retrieve the path of the CKEditor plugins for use in a URL.
+   * Retrieve the path of the CKEditor plugins for use in a library definition.
+   *
+   * The path is root-relative: in a library definition a leading slash means
+   * "relative to the Drupal root", and core adds the base path when it renders
+   * the asset. It must not depend on the current request, because the library
+   * definitions are cached: a cache rebuilt from Drush would otherwise store a
+   * host such as http://localhost for every later web request.
    *
    * @return string
-   *   The path to the CKEditor plugins for use in a URL.
+   *   The root-relative path to the CKEditor plugins.
    */
   // @codingStandardsIgnoreLine
   public static function getCKEditorLibraryPluginPath() {
-    $origin_url = \Drupal::request()->getSchemeAndHttpHost() . \Drupal::request()->getBaseUrl();
-    return $origin_url . '/libraries/' . self::$ckeditorName . '/plugins/';
+    return '/libraries/' . self::$ckeditorName . '/plugins/';
   }
 
   /**

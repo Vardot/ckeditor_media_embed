@@ -206,7 +206,7 @@ namespace Drupal\Tests\ckeditor_media_embed\Unit {
      */
     // @codingStandardsIgnoreLine
     public function testGetCKEditorLibraryPluginPath() {
-      $this->assertSame('libraries/ckeditor/plugins/', AssetManager::getCKEditorLibraryPluginPath());
+      $this->assertSame('/libraries/ckeditor5/plugins/', AssetManager::getCKEditorLibraryPluginPath());
     }
 
     /**
