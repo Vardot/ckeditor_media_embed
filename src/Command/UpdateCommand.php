@@ -6,7 +6,7 @@ namespace Drupal\ckeditor_media_embed\Command;
 use Drupal\Console\Annotations\DrupalCommand;
 
 /**
- * Class UpdateCommand.
+ * Updates the CKEditor plugins with Drupal Console.
  *
  * @package Drupal\ckeditor_media_embed
  *

@@ -194,7 +194,7 @@ class Embed implements EmbedInterface {
    * @param \DOMNode $node
    *   The DOMNode object of the <oembed> tag.
    * @param object $embed
-   *   The embed json decoded object as provided by Embed::getEmbedOjbect().
+   *   The embed json decoded object as provided by Embed::getEmbedObject().
    *
    * @return $this
    */
@@ -219,7 +219,7 @@ class Embed implements EmbedInterface {
    * Retrieve the HTML class to apply to the new embed html node.
    *
    * @param object $embed
-   *   The embed json decoded object as provided by Embed::getEmbedOjbect().
+   *   The embed json decoded object as provided by Embed::getEmbedObject().
    *
    * @return string
    *   The safe HTML class string to apply the new embed html node.

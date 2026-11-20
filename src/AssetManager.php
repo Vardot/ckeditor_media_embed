@@ -93,7 +93,7 @@ class AssetManager {
    *   The name of the plugin to check installation.
    *
    * @return bool
-   *   Returns TRUE if the specfied CKEditor plugin is installed and FALSE
+   *   Returns TRUE if the specified CKEditor plugin is installed and FALSE
    *   otherwise.
    */
   public static function pluginIsInstalled($plugin_name) {
@@ -231,10 +231,10 @@ class AssetManager {
   /**
    * Retrieve the system directory of the CKEditor plugins.
    *
-   * The plugin directory is used with commands and abolute system path.
+   * The plugin directory is used with commands and absolute system path.
    *
    * @return string
-   *   The diretory to the CKEditor plugins for use in a with commands and
+   *   The directory to the CKEditor plugins for use in a with commands and
    *   absolute system paths.
    */
   // @codingStandardsIgnoreLine

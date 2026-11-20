@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
- * Class InstallCommand.
+ * Installs the CKEditor plugins with Drupal Console.
  *
  * @package Drupal\ckeditor_media_embed
  *

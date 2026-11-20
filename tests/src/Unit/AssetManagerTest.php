@@ -17,8 +17,9 @@ namespace Drupal\Tests\ckeditor_media_embed\Unit {
      * {@inheritdoc}
      */
     public function setUp(): void {
+      parent::setUp();
       $container = new ContainerBuilder();
-      $container->set('app.root', __DIR__ . '/../../assets');
+      $container->setParameter('app.root', __DIR__ . '/../../assets');
       \Drupal::setContainer($container);
     }
 
@@ -102,7 +103,7 @@ namespace Drupal\Tests\ckeditor_media_embed\Unit {
         ->willReturn($config_empty);
 
       $container = new ContainerBuilder();
-      $container->set('app.root', __DIR__ . '/../../assets');
+      $container->setParameter('app.root', __DIR__ . '/../../assets');
       $container->set('config.factory', $config_factory);
       \Drupal::setContainer($container);
 
@@ -112,7 +113,7 @@ namespace Drupal\Tests\ckeditor_media_embed\Unit {
 
       // Test with a config file that has no ckeditor_version set, and the
       // drupal library yml file isn't found or can't be parsed.
-      $this->assertSame('4.5.x', AssetManager::getCKEditorVersion($library_discovery, $config_factory, $test_library_path, $test_empty_extension), 'The version that should be retrieved is 4.5.x');
+      $this->assertSame('4.5.11', AssetManager::getCKEditorVersion($library_discovery, $config_factory, $test_library_path, $test_empty_extension), 'The version that should be retrieved is 4.5.11');
 
       // Test with a config file that has no ckeditor_version set, and the
       // drupal library yml file is able to be found and parsed.

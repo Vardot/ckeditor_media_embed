@@ -1,0 +1,471 @@
+# GitLab CI on drupal/gitlab_templates: https://project.pages.drupalcode.org/gitlab_templates/
+#
+# build    - the templates' composer job.
+# validate - the templates' linters, eslint on the step definitions and a dry
+#            run that resolves every step of the webship-js suite.
+# pre-test - the build job builds the site once (the module, CKEditor 4 and
+#            the CKEditor 4 plugins the module's Drush command downloads),
+#            applies the ckeditor_media_embed test fixtures, adds the testing
+#            users with drush and dumps the database (gzip). The built site,
+#            node_modules and the browser are cached.
+# test     - a smoke canary per lane, then one parallel job per feature group:
+#            restore the dump, serve the site with drush runserver and run the
+#            group with webship-js.
+# report   - merge every group's cucumber JSON into one HTML and PDF report.
+#
+# The webship-js jobs run on merge requests, on the *.x branches and on tags,
+# so every release carries its own functional test report.
+#
+# One lane: Drupal core 10.6 (standard profile, @webship-js/drupal-core-steps).
+# 8.x-1.x is the CKEditor 4 branch. CKEditor 4 left core in Drupal 10 and
+# lives on in the contrib ckeditor module (^9.4 || ^10), so this branch can be
+# tested on Drupal 10 only: the latest 10.6, on PHP 8.4, the highest PHP
+# Drupal 10 supports.
+include:
+  - project: $_GITLAB_TEMPLATES_REPO
+    # Pinned: bump it deliberately, in its own issue.
+    ref: 1.17.3
+    file:
+      - '/includes/include.drupalci.main.yml'
+      - '/includes/include.drupalci.variables.yml'
+      - '/includes/include.drupalci.workflows.yml'
+
+# The templates' stages, plus pre-test and report.
+stages:
+  - build
+  - validate
+  - pre-test
+  - test
+  - report
+
+variables:
+  # No yarn.lock is committed; Yarn 4 defaults to immutable installs and would
+  # refuse to create one. Allow lockfile creation in CI for every job.
+  YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+  # Drupal 10 on PHP 8.4; the composer job sets the core version.
+  OPT_IN_TEST_CURRENT: 1
+  _TARGET_PHP: "8.4"
+  # Every validate job must pass before a merge.
+  _ALL_VALIDATE_ALLOW_FAILURE: 0
+  # The browser suite is webship-js.
+  SKIP_NIGHTWATCH: 1
+  # Outside a merge request, "test-only changes" compares with the default
+  # branch, which is 2.x; this branch's tests belong with 8.x-1.x.
+  _TEST_ONLY_TARGET_BRANCH: "8.x-1.x"
+
+# Drupal 10, not the templates' current core: the module needs CKEditor 4.
+# drupal/ckeditor comes from the module's require-dev. Drupal 10 core runs
+# Yarn 1, which does not read the project's .yarnrc.yml, so the 2.x
+# YARN_RC_FILENAME override is not needed here.
+composer:
+  variables:
+    DRUPAL_CORE: "~10.6.0"
+    # As the templates' own Drupal 10 variant, composer (previous major).
+    _NODE_VERSION: "v20"
+
+# The webship-js suite is Node code with its own eslint config.
+'eslint (step definitions)':
+  stage: validate
+  needs: []
+  image: node:24
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+    - if: '$CI_COMMIT_REF_NAME =~ /^([0-9]+\.)?[0-9]+\.x$/ || $CI_COMMIT_REF_NAME =~ /^[78]\.x-[0-9]+\.x$/'
+      when: on_success
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
+    - when: never
+  script:
+    - npm install --no-save eslint@8 eslint-config-prettier@8
+    - node ./node_modules/eslint/bin/eslint.js --no-eslintrc -c tests/.eslintrc.json --no-ignore tests/step-definitions tests/scripts
+
+# Every step of every feature resolves to exactly one definition.
+'🧩 webship-js dry run':
+  extends: 'eslint (step definitions)'
+  variables:
+    WEBSHIP_REPORT_DISABLE: "1"
+  script:
+    - corepack enable
+    - yarn install
+    - CUCUMBER_TAGS='not @wip' yarn test --dry-run
+
+.e2e-site:
+  extends: .testing-job-base
+  allow_failure: false
+  timeout: 50m
+  retry:
+    max: 1
+    when:
+      - job_execution_timeout
+      - stuck_or_timeout_failure
+      - runner_system_failure
+  services:
+    - name: $_CONFIG_DOCKERHUB_ROOT/$_TARGET_DB_TYPE-$_TARGET_DB_VERSION:$_TARGET_DB_IMAGE_TAG
+      alias: database
+  variables:
+    LAUNCH_URL: "http://127.0.0.1:8888"
+    LOGIN_USER: "webmaster"
+    LOGIN_PASS: "dD.123123ddd"
+    HEADLESS: "true"
+    SLOW_MO: "0"
+    BROWSER: "chromium"
+    FORCE_COLOR: "1"
+    # The groups write their reports in after_script.
+    WEBSHIP_REPORT_DISABLE: "1"
+    _BUILD_DIR: "/tmp/site-build"
+    # What the build job hands its test jobs: composer files, settings,
+    # public files, the CKEditor 4 plugins and the database dump.
+    E2E_SITE: "$CI_PROJECT_DIR/e2e-site-$E2E_LANE"
+    # The built site, cached; moved back to $_BUILD_DIR before use.
+    E2E_SITE_CACHE: "$CI_PROJECT_DIR/.cache/site-$E2E_LANE"
+    COMPOSER_MEMORY_LIMIT: "-1"
+    # Download caches live in the project so GitLab can cache them.
+    COMPOSER_CACHE_DIR: "$CI_PROJECT_DIR/.cache/composer"
+    YARN_CACHE_FOLDER: "$CI_PROJECT_DIR/.cache/yarn"
+    PLAYWRIGHT_BROWSERS_PATH: "$CI_PROJECT_DIR/.cache/ms-playwright"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: on_success
+    - if: '$CI_COMMIT_REF_NAME =~ /^([0-9]+\.)?[0-9]+\.x$/ || $CI_COMMIT_REF_NAME =~ /^[78]\.x-[0-9]+\.x$/'
+      when: on_success
+    - if: '$CI_COMMIT_TAG'
+      when: on_success
+    - when: never
+
+# Caches: the build jobs fill them, the test jobs only pull. The keys name
+# 8.x-1.x, so this branch never shares a cache with the Drupal 11 site of 2.x.
+# node_modules, the yarn cache, the headless Chromium and its .deb files.
+.e2e-browser-cache: &e2e_browser_cache
+  key:
+    files:
+      - package.json
+    prefix: ckeditor-media-embed-8x-webship-browser-v1
+  paths:
+    - node_modules
+    - .cache/yarn
+    - .cache/ms-playwright
+    - .cache/apt
+
+# The built site, one cache per lane and branch.
+.e2e-site-cache: &e2e_site_cache
+  key: ckeditor-media-embed-8x-webship-site-$E2E_LANE-$CI_COMMIT_REF_SLUG-v1
+  paths:
+    - .cache/site-$E2E_LANE
+
+# Composer downloads, one cache per lane.
+.e2e-composer-cache: &e2e_composer_cache
+  key: ckeditor-media-embed-8x-webship-composer-$E2E_LANE-v1
+  paths:
+    - .cache/composer
+
+# The site install, reused while composer.lock resolves the same.
+.e2e-install-cache: &e2e_install_cache
+  key: ckeditor-media-embed-8x-webship-install-$E2E_LANE-v1
+  paths:
+    - .cache/e2e-install
+
+.e2e-fragments:
+  # Node 24 from the tarball (NodeSource 403s on the runner).
+  node:
+    - rm -f /etc/apt/sources.list.d/nodesource.list /etc/apt/sources.list.d/nodesource.sources
+    - curl -fsSL https://nodejs.org/dist/latest-v24.x/ -o /tmp/node-index.html
+    - NODE_TARBALL=$(grep -oE 'node-v24\.[0-9.]+-linux-x64\.tar\.gz' /tmp/node-index.html | head -1)
+    - curl -fsSL "https://nodejs.org/dist/latest-v24.x/$NODE_TARBALL" -o /tmp/node.tar.gz
+    - tar -xzf /tmp/node.tar.gz -C /usr/local --strip-components=1
+    - case "$(node -v)" in v24.*) ;; *) echo "Expected Node 24, got $(node -v)"; exit 1 ;; esac
+  # webship-js, the Drupal steps and the headless Chromium; both are no-ops
+  # on a warm cache. webship-js scaffolds nothing when cucumber.js exists.
+  browser:
+    - 'test -f .yarnrc.yml || echo "nodeLinker: node-modules" > .yarnrc.yml'
+    - corepack enable
+    - yarn install
+    - ./node_modules/.bin/playwright install --only-shell chromium
+    # Only the missing system libraries, from cached .deb files.
+    - rm -f /etc/apt/apt.conf.d/docker-clean
+    - mkdir -p "$CI_PROJECT_DIR/.cache/apt/partial"
+    - printf 'Dir::Cache::Archives "%s";\nAPT::Keep-Downloaded-Packages "true";\n' "$CI_PROJECT_DIR/.cache/apt" > /etc/apt/apt.conf.d/90-e2e-cache
+    - apt-get update -qq
+    # The dry run exits 1 when something is missing; the list is what we want.
+    - PW_MISSING=$(./node_modules/.bin/playwright install-deps --dry-run chromium | sed -n 's/^  //p' | xargs) || true
+    - echo "Missing for Chromium:${PW_MISSING:- none}"
+    - test -z "$PW_MISSING" || apt-get install -y -qq --no-install-recommends $PW_APT_OPTS $PW_MISSING > /dev/null
+  project:
+    - composer create-project "$SITE_PACKAGE" $_BUILD_DIR --no-interaction --no-progress --no-install
+    - cd $_BUILD_DIR
+  site:
+    - DRUSH_BIN="$_BUILD_DIR/$(composer config bin-dir)/drush"
+    - mkdir -pv $_BUILD_DIR/web/sites/default/files
+    - chmod -R 777 $_BUILD_DIR/web/sites/default/files
+  # Install the site, or restore the install cached for this exact
+  # composer.lock (less ckeditor_media_embed), install arguments and PHP version.
+  install:
+    - export SIMPLETEST_DB=mysql://$MYSQL_USER:$MYSQL_PASSWORD@database/$MYSQL_DATABASE
+    # The database is MariaDB's own: note its tables, so only Drupal's are dumped.
+    - $DRUSH_BIN --root=$_BUILD_DIR/web sql:query --db-url=$SIMPLETEST_DB "SHOW TABLES" > /tmp/db-tables-before.txt
+    - |
+      INSTALL_KEY=$(php -r '$l = json_decode(file_get_contents("composer.lock"), TRUE); $s = [];
+        foreach (array_merge($l["packages"], $l["packages-dev"] ?? []) as $p) {
+          if ($p["name"] !== "drupal/ckeditor_media_embed") { $s[] = $p["name"] . "@" . $p["version"] . "@" . ($p["dist"]["reference"] ?? $p["source"]["reference"] ?? ""); }
+        }
+        sort($s); echo md5(implode("\n", $s) . "\n" . getenv("INSTALL_ARGS") . "\n" . PHP_VERSION);')
+    - INSTALL_CACHE="$CI_PROJECT_DIR/.cache/e2e-install/$INSTALL_KEY"
+    - chmod u+w web/sites/default
+    - |
+      if [ -f "$INSTALL_CACHE/db.sql.gz" ]; then
+        echo "Restoring the cached install $INSTALL_KEY"
+        cp "$INSTALL_CACHE/settings.php" web/sites/default/settings.php
+        tar -xzf "$INSTALL_CACHE/files.tar.gz" -C web/sites/default
+        $DRUSH_BIN --root=$_BUILD_DIR/web sql:query --file="$INSTALL_CACHE/db.sql.gz"
+      else
+        echo "Installing $INSTALL_ARGS; caching it as $INSTALL_KEY"
+        $DRUSH_BIN --root=$_BUILD_DIR/web site:install $INSTALL_ARGS --db-url=$SIMPLETEST_DB --account-name=webmaster --account-pass=dD.123123ddd --site-name="CKEditor Media Embed CI" -y
+        rm -rf "$CI_PROJECT_DIR/.cache/e2e-install" && mkdir -p "$INSTALL_CACHE"
+        cp web/sites/default/settings.php "$INSTALL_CACHE/"
+        tar -czf "$INSTALL_CACHE/files.tar.gz" -C web/sites/default --exclude=files/php --exclude=files/css --exclude=files/js --exclude=files/styles files
+        $DRUSH_BIN --root=$_BUILD_DIR/web sql:query "SHOW TABLES" | grep -vxF -f /tmp/db-tables-before.txt | paste -sd, - > /tmp/install-tables.txt
+        $DRUSH_BIN --root=$_BUILD_DIR/web sql:dump --tables-list="$(cat /tmp/install-tables.txt)" --gzip --result-file="$INSTALL_CACHE/db.sql"
+      fi
+    # The suite logs in as webmaster with this password, whatever the cached
+    # install holds.
+    - |
+      $DRUSH_BIN --root=$_BUILD_DIR/web php:eval '$account = \Drupal\user\Entity\User::load(1); $account->setUsername("webmaster"); $account->setPassword("dD.123123ddd"); $account->save();'
+    - $DRUSH_BIN --root=$_BUILD_DIR/web cache:rebuild
+    - $DRUSH_BIN --root=$_BUILD_DIR/web user:information webmaster
+
+# Build the site once: install it, download the CKEditor 4 plugins, apply
+# the fixtures, add the testing users with drush, dump the database, and cache
+# the built site.
+.e2e-build:
+  extends: .e2e-site
+  stage: pre-test
+  needs: []
+  cache:
+    - <<: *e2e_browser_cache
+      policy: pull-push
+    - <<: *e2e_site_cache
+      policy: push
+    - <<: *e2e_composer_cache
+      policy: pull-push
+    - <<: *e2e_install_cache
+      policy: pull-push
+  variables:
+    # Download the system libraries only; the test jobs install them.
+    PW_APT_OPTS: "--download-only"
+  artifacts:
+    when: on_success
+    paths:
+      - e2e-site-$E2E_LANE
+    expire_in: 1 day
+  before_script:
+    - !reference [.e2e-fragments, node]
+    - !reference [.e2e-fragments, browser]
+    - !reference [.e2e-fragments, project]
+    - composer config minimum-stability dev
+    - composer config prefer-stable true
+    - composer config allow-plugins true -n
+    - composer config repositories.mut '{"type":"path","url":"'"$CI_PROJECT_DIR"'","options":{"symlink":true}}'
+    # The module and CKEditor 4, from the contrib ckeditor module since
+    # Drupal 10. Robo 5.2 calls Application::addCommand(), which the Symfony
+    # Console 6.4 of Drupal 10 lacks, so drush dies on start: keep Robo on 5.1.
+    - composer require "drupal/ckeditor_media_embed:*@dev" "$EDITOR_PACKAGE" drush/drush "consolidation/robo:~5.1.1" --with-all-dependencies --no-interaction --no-progress
+    - grep -A2 '^ckeditor:' web/modules/contrib/ckeditor/ckeditor.libraries.yml | grep version
+    - !reference [.e2e-fragments, site]
+    - !reference [.e2e-fragments, install]
+    # The fixtures recipe installs the hidden test module that answers oEmbed
+    # requests from tests/fixtures/oembed. After the install or its cache, so
+    # a cached settings.php gets it too.
+    - chmod u+w web/sites/default web/sites/default/settings.php
+    - grep -q "extension_discovery_scan_tests" web/sites/default/settings.php || echo "\$settings['extension_discovery_scan_tests'] = TRUE;" >> web/sites/default/settings.php
+    - $DRUSH_BIN --root=$_BUILD_DIR/web cache:rebuild
+    # What the README asks a site builder to do: install the module, then
+    # download its CKEditor 4 plugins with its own Drush command, which
+    # fetches the CKEditor 4 package from GitHub. Every pipeline so checks
+    # that the download still works.
+    - $DRUSH_BIN --root=$_BUILD_DIR/web pm:install ckeditor ckeditor_media_embed -y
+    - $DRUSH_BIN --root=$_BUILD_DIR/web ckeditor_media_embed:install --yes
+    - test -f web/libraries/ckeditor/plugins/embedsemantic/plugin.js
+    - $DRUSH_BIN --root=$_BUILD_DIR/web recipe "$CI_PROJECT_DIR/tests/recipes/ckeditor_media_embed_test" -y
+  script:
+    # Login flood limits off for the robot.
+    - $DRUSH_BIN --root=$_BUILD_DIR/web config:set user.flood ip_limit 1000000 -y
+    - $DRUSH_BIN --root=$_BUILD_DIR/web config:set user.flood user_limit 1000000 -y
+    # The testing users, with drush rather than a browser scenario.
+    - CKEDITOR_MEDIA_EMBED_DRUSH="$DRUSH_BIN --root=$_BUILD_DIR/web" node "$CI_PROJECT_DIR/tests/scripts/add-testing-users.js"
+    - $DRUSH_BIN --root=$_BUILD_DIR/web cache:rebuild
+    - $DRUSH_BIN --root=$_BUILD_DIR/web core:requirements --format=json | php -r '$r = json_decode(stream_get_contents(STDIN), TRUE)["ckeditor_media_embed"]; echo $r["value"], "\n", $r["description"], "\n";'
+    - mkdir -p "$E2E_SITE"
+    - cp composer.json composer.lock web/sites/default/settings.php "$E2E_SITE/"
+    - tar -czf "$E2E_SITE/files.tar.gz" -C web/sites/default --exclude=files/php --exclude=files/css --exclude=files/js --exclude=files/styles files
+    # The CKEditor 4 plugins are no Composer package, so they travel too.
+    - tar -czf "$E2E_SITE/libraries.tar.gz" -C web libraries
+    - $DRUSH_BIN --root=$_BUILD_DIR/web sql:query "SHOW TABLES" | grep -vxF -f /tmp/db-tables-before.txt | paste -sd, - > /tmp/site-tables.txt
+    - test -s /tmp/site-tables.txt
+    - $DRUSH_BIN --root=$_BUILD_DIR/web sql:dump --tables-list="$(cat /tmp/site-tables.txt)" --gzip --result-file="$E2E_SITE/db.sql"
+    - ls -lh "$E2E_SITE"
+    # Cache the built site for the test jobs.
+    - cd "$CI_PROJECT_DIR"
+    - rm -rf "$E2E_SITE_CACHE" && mkdir -p .cache && mv "$_BUILD_DIR" "$E2E_SITE_CACHE"
+    - du -sh "$E2E_SITE_CACHE" node_modules .cache/ms-playwright || true
+
+# Restore the built site and its database dump, serve it, then run one
+# feature group (FEATURES_GLOB) as one cucumber JSON (CUCUMBER_JSON).
+.e2e-test:
+  extends: .e2e-site
+  stage: test
+  cache:
+    - <<: *e2e_browser_cache
+      policy: pull
+    - <<: *e2e_site_cache
+      policy: pull
+    - <<: *e2e_composer_cache
+      policy: pull
+  variables:
+    CUCUMBER_JSON: "cucumber_report--$E2E_LANE--$SUITE"
+  artifacts:
+    when: always
+    paths:
+      - tests/reports
+      - tests/screenshots
+      - tests/videos
+    expire_in: 30 days
+  before_script:
+    - !reference [.e2e-fragments, node]
+    - !reference [.e2e-fragments, browser]
+    # The cached site when it is the build job's own, else composer install
+    # from the build job's lock file.
+    - |
+      if [ -f "$E2E_SITE_CACHE/composer.lock" ] && cmp -s "$E2E_SITE_CACHE/composer.lock" "$E2E_SITE/composer.lock"; then
+        echo "Using the cached $E2E_LANE site"
+        rm -rf "$_BUILD_DIR" && mv "$E2E_SITE_CACHE" "$_BUILD_DIR"
+        cd "$_BUILD_DIR"
+      else
+        echo "No cached $E2E_LANE site for this lock file: composer install"
+        composer create-project "$SITE_PACKAGE" $_BUILD_DIR --no-interaction --no-progress --no-install
+        cd $_BUILD_DIR
+        cp "$E2E_SITE/composer.json" "$E2E_SITE/composer.lock" .
+        composer install --no-interaction --no-progress
+      fi
+    - !reference [.e2e-fragments, site]
+    - tar -xzf "$E2E_SITE/files.tar.gz" -C web/sites/default
+    # The CKEditor 4 plugins the build job downloaded.
+    - rm -rf web/libraries && tar -xzf "$E2E_SITE/libraries.tar.gz" -C web
+    - chmod u+w web/sites/default && cp "$E2E_SITE/settings.php" web/sites/default/settings.php
+    - $DRUSH_BIN --root=$_BUILD_DIR/web sql:query --file="$E2E_SITE/db.sql.gz"
+    - $DRUSH_BIN --root=$_BUILD_DIR/web cache:rebuild
+  script:
+    - PHP_CLI_SERVER_WORKERS=8 $DRUSH_BIN --root=$_BUILD_DIR/web runserver 127.0.0.1:8888 > "$CI_PROJECT_DIR/runserver.log" 2>&1 &
+    # A cold site can miss the first page load, so load the pages the suite
+    # opens first, anonymous and as the webmaster.
+    - |
+      for i in $(seq 1 30); do curl -s -o /dev/null "$LAUNCH_URL/user/login" && break; sleep 1; done
+      warm () { curl -sS -o /dev/null -L -b /tmp/warm.jar -c /tmp/warm.jar --max-time 300 -w "%{http_code} %{time_total}s $1\n" "$LAUNCH_URL$1" || true; }
+      warm /user/login
+      warm /
+      curl -sS -o /dev/null -L -b /tmp/warm.jar -c /tmp/warm.jar --max-time 300 "$($DRUSH_BIN --root=$_BUILD_DIR/web user:login --name=webmaster --uri=$LAUNCH_URL --no-browser)" || true
+      for path in /admin/people /admin/modules /admin/reports/status /admin/config/media/ckeditor-media-embed/settings /admin/config/content/formats/manage/full_html /admin/config/content/formats/manage/basic_html /node/add/article /node/add/page; do warm $path; done
+    - cd "$CI_PROJECT_DIR"
+    # Some steps run drush: the provider, the Drush commands, the CKEditor 4
+    # plugins and the configuration checks.
+    - export CKEDITOR_MEDIA_EMBED_DRUSH="$DRUSH_BIN --root=$_BUILD_DIR/web"
+    - FEATURES="$FEATURES_GLOB" yarn $SUITE_SCRIPT
+  after_script:
+    - cd "$CI_PROJECT_DIR"
+    - export REPORT="ckeditor-media-embed--${CI_COMMIT_REF_SLUG:-local}--$E2E_LANE--$SUITE--functional-testing-report"
+    - node ./node_modules/webship-js/bin/generate-reports.js
+        --json "tests/reports/$CUCUMBER_JSON.json"
+        --out "tests/reports/$REPORT.html"
+        --format all
+        --pdf-out "tests/reports/$REPORT.pdf"
+        --title "CKEditor Media Embed 8.x-1.x ($E2E_LANE, $SUITE)" || true
+
+# These groups run at the same time, each on its own copy of the site.
+# 15-16 changes the site (the CKEditor 4 plugins, then an uninstall), so it
+# runs alone. 14 downloads the CKEditor 4 4.18.0 plugins and puts the
+# originals back.
+.e2e-groups:
+  parallel:
+    matrix:
+      - SUITE: "01-03-install-settings-format"
+        FEATURES_GLOB: "tests/features/drupal/{01,02,03}-*.feature"
+      - SUITE: "04-06-editor-html-semantic"
+        FEATURES_GLOB: "tests/features/drupal/{04,05,06}-*.feature"
+      - SUITE: "07-access-control"
+        FEATURES_GLOB: "tests/features/drupal/07-*.feature"
+      - SUITE: "08-09-providers-basic-html"
+        FEATURES_GLOB: "tests/features/drupal/{08,09}-*.feature"
+      - SUITE: "10-12-formatter-auto-embed-errors"
+        FEATURES_GLOB: "tests/features/drupal/{10,11,12}-*.feature"
+      - SUITE: "13-14-empty-url-drush"
+        FEATURES_GLOB: "tests/features/drupal/{13,14}-*.feature"
+      - SUITE: "15-16-missing-library-uninstall"
+        FEATURES_GLOB: "tests/features/drupal/{15,16}-*.feature"
+
+# The smoke canary: the login feature alone. Every group needs it, so a
+# systemic break fails once here instead of in every group.
+.e2e-smoke:
+  variables:
+    SUITE: "00-smoke"
+    FEATURES_GLOB: "tests/features/drupal/00-*.feature"
+
+# = Drupal core 10.6: a standard site with CKEditor 4, the Drupal core steps =
+.e2e-lane-core:
+  variables:
+    E2E_LANE: "core"
+    SITE_PACKAGE: "drupal/recommended-project:~10.6.0"
+    EDITOR_PACKAGE: "drupal/ckeditor:^1.0"
+    INSTALL_ARGS: "standard"
+    SUITE_SCRIPT: "test"
+
+'🏗️ Drupal core site':
+  extends: [.e2e-build, .e2e-lane-core]
+
+'🧪 functional smoke (Drupal core)':
+  extends: [.e2e-test, .e2e-lane-core, .e2e-smoke]
+  needs: ['🏗️ Drupal core site']
+
+'🧪 functional (Drupal core)':
+  extends: [.e2e-test, .e2e-lane-core, .e2e-groups]
+  needs: ['🏗️ Drupal core site', '🧪 functional smoke (Drupal core)']
+
+# = report = every group's cucumber JSON, merged into one HTML and PDF report.
+# when: always, so a red group still gets the combined report.
+'📊 Create reports':
+  stage: report
+  image: node:24
+  needs:
+    - '🧪 functional smoke (Drupal core)'
+    - '🧪 functional (Drupal core)'
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    - if: '$CI_COMMIT_REF_NAME =~ /^([0-9]+\.)?[0-9]+\.x$/ || $CI_COMMIT_REF_NAME =~ /^[78]\.x-[0-9]+\.x$/'
+      when: always
+    - if: '$CI_COMMIT_TAG'
+      when: always
+    - when: never
+  variables:
+    WEBSHIP_REPORT_DISABLE: "1"
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq jq > /dev/null
+    - corepack enable
+    - yarn install
+    # Chromium prints the PDF.
+    - ./node_modules/.bin/playwright install --with-deps --only-shell chromium
+  script:
+    - ls tests/reports/cucumber_report--*.json
+    - jq -s 'add' tests/reports/cucumber_report--*.json > tests/reports/cucumber_report.json
+    - export REPORT="ckeditor-media-embed--${CI_COMMIT_REF_SLUG}--functional-testing-report--$(date +%Y-%m-%d)--$(date +%H-%M)"
+    - node ./node_modules/webship-js/bin/generate-reports.js
+        --json tests/reports/cucumber_report.json
+        --out "tests/reports/$REPORT.html"
+        --format all
+        --pdf-out "tests/reports/$REPORT.pdf"
+        --title "CKEditor Media Embed 8.x-1.x functional testing"
+  artifacts:
+    when: always
+    paths:
+      - tests/reports
+      - tests/screenshots
+    expire_in: 30 days
+  allow_failure: false

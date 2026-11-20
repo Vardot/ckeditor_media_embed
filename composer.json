@@ -9,6 +9,9 @@
         "source": "https://drupal.org/project/ckeditor_media_embed"
     },
     "require": {},
+    "require-dev": {
+        "drupal/ckeditor": "^1.0"
+    },
     "extra": {
         "drush": {
             "services": {

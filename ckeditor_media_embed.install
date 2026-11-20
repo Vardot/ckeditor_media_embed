@@ -5,6 +5,7 @@
  * Install file for the CKEditor Media Embed plugin module.
  */
 
+// cspell:ignore requirments
 use Drupal\ckeditor_media_embed\AssetManager;
 
 use Drupal\Core\Render\Markup;

@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "title": "An Instagram post for the media embed tests",
+  "author_name": "drupal",
+  "provider_name": "Instagram",
+  "provider_url": "https://www.instagram.com/",
+  "type": "rich",
+  "width": 658,
+  "html": "<blockquote class=\"instagram-media\" data-instgrm-permalink=\"https://www.instagram.com/p/C0dEMoPost1/\" data-instgrm-version=\"14\"><a href=\"https://www.instagram.com/p/C0dEMoPost1/\">View this post on Instagram</a></blockquote>\n<script async src=\"//www.instagram.com/embed.js\"></script>"
+}

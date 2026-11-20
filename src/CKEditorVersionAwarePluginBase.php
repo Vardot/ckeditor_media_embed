@@ -10,7 +10,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Defines a utlity plugin base for a CKEditor version aware plugin.
+ * Defines a utility plugin base for a CKEditor version aware plugin.
  */
 abstract class CKEditorVersionAwarePluginBase extends PluginBase implements CKEditorPluginInterface, ContainerFactoryPluginInterface {
 

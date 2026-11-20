@@ -1,0 +1,11 @@
+{
+  "css": {
+    "media embed button": "a.cke_button__embed",
+    "semantic media embed button": "a.cke_button__embedsemantic",
+    "rich text editor toolbar": ".cke_toolbox",
+    "rendered media embed": "div.embed-media.embed-media--video-youtube",
+    "rendered media embed iframe": "div.embed-media.embed-media--video-youtube iframe",
+    "provider url field": "#edit-embed-provider"
+  },
+  "xpath": {}
+}

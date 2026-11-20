@@ -2,12 +2,16 @@
 
 namespace Drupal\ckeditor_media_embed\Command;
 
+/**
+ * The CLI command the CKEditor plugin installation talks to.
+ */
 interface CKEditorCliCommandInterface {
 
   /**
    * Retrieve the command input service.
    *
    * @return \Symfony\Component\Console\Input\InputInterface
+   *   The input of the command.
    */
   public function getInput();
 
@@ -15,6 +19,7 @@ interface CKEditorCliCommandInterface {
    * Retrieve the i/o style.
    *
    * @return \Symfony\Component\Console\Style\StyleInterface
+   *   The i/o style of the command.
    */
   public function getIo();
 
@@ -34,7 +39,7 @@ interface CKEditorCliCommandInterface {
    *
    * @param string $question
    *   The confirmation question.
-   * @param $default
+   * @param mixed $default
    *   The default value to return if user doesn’t enter any valid input.
    *
    * @return mixed

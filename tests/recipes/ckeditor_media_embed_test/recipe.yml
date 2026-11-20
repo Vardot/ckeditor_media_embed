@@ -1,0 +1,186 @@
+name: 'CKEditor Media Embed test fixtures'
+description: 'Fixtures for the CKEditor Media Embed webship-js suite on a standard Drupal 10 site: Full HTML and Basic HTML on CKEditor 4 with the module''s buttons and the "Convert Oembed tags to media embeds" filter, Article with its Body on Full HTML and a Video link field shown by the module''s link formatter, Basic page with its Body on Basic HTML, the roles the access scenarios log in with, and the test module that answers oEmbed requests from local fixtures.'
+type: Testing
+# The Standard profile of Drupal 10 creates Article, Basic page, Full HTML,
+# Basic HTML and the Content editor role, so no core recipe is applied.
+install:
+  - link
+  # CKEditor 4, from contrib since Drupal 10.
+  - ckeditor
+  - ckeditor_media_embed
+  # Answers oEmbed requests from tests/fixtures/oembed; it is hidden, so the
+  # site needs $settings['extension_discovery_scan_tests'] = TRUE.
+  - ckeditor_media_embed_test
+config:
+  # Some of this config already exists on a standard site.
+  strict: false
+  actions:
+    # What the README asks a site builder to do on a text format that does
+    # not limit HTML: put CKEditor 4 on it, drag the "Media Embed" and
+    # "Semantic Media Embed" buttons into the toolbar, choose what a pasted
+    # media URL becomes, and enable the filter the semantic embed needs.
+    editor.editor.full_html:
+      setMultiple:
+        -
+          property_name: editor
+          value: ckeditor
+        -
+          property_name: settings
+          value:
+            toolbar:
+              rows:
+                -
+                  -
+                    name: Media
+                    items:
+                      - Embed
+                      - EmbedSemantic
+                  -
+                    name: Formatting
+                    items:
+                      - Bold
+                      - Italic
+                  -
+                    name: Links
+                    items:
+                      - DrupalLink
+                      - DrupalUnlink
+                  -
+                    name: Lists
+                    items:
+                      - BulletedList
+                      - NumberedList
+                  -
+                    name: Tools
+                    items:
+                      - Source
+            plugins:
+              autoembed:
+                status: embed
+    filter.format.full_html:
+      setFilterConfig:
+        instance_id: filter_ckeditor_media_embed
+        configuration:
+          id: filter_ckeditor_media_embed
+          provider: ckeditor_media_embed
+          status: true
+          weight: 5
+          settings: {  }
+    # A text format that limits HTML takes the semantic embed only, as the
+    # README says: the editor writes <oembed>URL</oembed>, the format allows
+    # <oembed>, and the filter, after "Limit allowed HTML", renders it.
+    editor.editor.basic_html:
+      setMultiple:
+        -
+          property_name: editor
+          value: ckeditor
+        -
+          property_name: settings
+          value:
+            toolbar:
+              rows:
+                -
+                  -
+                    name: Media
+                    items:
+                      - EmbedSemantic
+                  -
+                    name: Formatting
+                    items:
+                      - Bold
+                      - Italic
+                  -
+                    name: Links
+                    items:
+                      - DrupalLink
+                      - DrupalUnlink
+                  -
+                    name: Tools
+                    items:
+                      - Source
+            plugins:
+              autoembed:
+                status: embedsemantic
+    filter.format.basic_html:
+      setFilterConfigs:
+        -
+          instance_id: filter_html
+          configuration:
+            id: filter_html
+            provider: filter
+            status: true
+            weight: -10
+            settings:
+              allowed_html: '<br> <p> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <cite> <dl> <dt> <dd> <a hreflang href> <blockquote cite> <ul type> <ol start type> <strong> <em> <code> <li> <img src alt data-entity-uuid data-entity-type height width data-caption data-align> <oembed>'
+              filter_html_help: false
+              filter_html_nofollow: false
+        -
+          instance_id: filter_ckeditor_media_embed
+          configuration:
+            id: filter_ckeditor_media_embed
+            provider: ckeditor_media_embed
+            status: true
+            weight: 5
+            settings: {  }
+    # Body offers Full HTML only, so the form shows no format switch and the
+    # editor always carries both buttons.
+    field.field.node.article.body:
+      setSettings:
+        allowed_formats:
+          - full_html
+    # Basic page writes in Basic HTML, the restricted format most sites give
+    # their editors.
+    field.field.node.page.body:
+      setSettings:
+        allowed_formats:
+          - basic_html
+    # The Video link field: a link widget, shown with the module's
+    # "Oembed element using CKEditor Media Embed provider" formatter.
+    core.entity_form_display.node.article.default:
+      setComponents:
+        -
+          name: field_video_link
+          options:
+            type: link_default
+            weight: 3
+            region: content
+            settings:
+              placeholder_url: ''
+              placeholder_title: ''
+            third_party_settings: {  }
+    core.entity_view_display.node.article.default:
+      setComponents:
+        -
+          name: field_video_link
+          options:
+            type: ckeditor_media_embed_link_formatter
+            label: above
+            weight: 3
+            region: content
+            settings: {  }
+            third_party_settings: {  }
+    user.role.content_editor:
+      grantPermissions:
+        - 'create article content'
+        - 'edit own article content'
+        - 'create page content'
+        - 'edit own page content'
+        - 'use text format full_html'
+    # Writes articles and pages, but may not use Full HTML: the article Body
+    # is closed to it, the Basic page Body has the semantic embed.
+    user.role.page_writer:
+      createIfNotExists:
+        label: 'Page writer'
+      grantPermissions:
+        - 'access content overview'
+        - 'create article content'
+        - 'create page content'
+        - 'edit own page content'
+    # Administers the text formats and the provider settings, and writes
+    # nothing.
+    user.role.text_format_admin:
+      createIfNotExists:
+        label: 'Text format administrator'
+      grantPermissions:
+        - 'access administration pages'
+        - 'administer filters'

@@ -1,1 +1,19 @@
 /vendor/
+node_modules/
+.env
+# webship-js (Playwright + Cucumber) run artifacts.
+tests/videos/
+tests/reports/
+tests/screenshots/
+.DS_Store
+*.swp
+*.log
+
+# Yarn 4 cache and install state.
+.yarn/
+
+# JavaScript lockfiles are not committed: installs resolve from package.json
+# (packageManager yarn@4.18.1, engines).
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
